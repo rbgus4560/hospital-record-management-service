@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1510" viewBox="0 0 2400 1510">
+<rect width="100%" height="100%" fill="white"/>
+<text x="65" y="82" fill="#172d49" font-family="Malgun Gothic, sans-serif" font-size="47" font-weight="700">병원 영수증에서 일정 확인·PDF까지</text>
+<text x="67" y="128" fill="#64778b" font-family="Malgun Gothic, sans-serif" font-size="26" font-weight="400">사진 업로드 → CLOVA OCR → 좌표 기반 파싱 → 사용자 확인 → 임시 기록·다운로드</text>
+<rect x="55" y="190" width="660" height="1160" rx="24" fill="#f3f7fc" stroke="#c4d4e9" stroke-width="2"/>
+<rect x="790" y="190" width="660" height="1160" rx="24" fill="#f3f9f6" stroke="#bed9cf" stroke-width="2"/>
+<rect x="1525" y="190" width="820" height="480" rx="24" fill="#fcf8f1" stroke="#e2d0b1" stroke-width="2"/>
+<rect x="1525" y="790" width="820" height="560" rx="24" fill="#f8f5fc" stroke="#d6c5e6" stroke-width="2"/>
+<text x="95" y="252" fill="#3668a8" font-family="Malgun Gothic, sans-serif" font-size="32" font-weight="700">브라우저 · React</text>
+<text x="830" y="252" fill="#27806a" font-family="Malgun Gothic, sans-serif" font-size="32" font-weight="700">로컬 Python 백엔드</text>
+<text x="1565" y="252" fill="#b57a2c" font-family="Malgun Gothic, sans-serif" font-size="32" font-weight="700">외부 OCR 서비스</text>
+<text x="1565" y="852" fill="#80609d" font-family="Malgun Gothic, sans-serif" font-size="32" font-weight="700">브라우저 다운로드</text>
+<rect x="150.0" y="335" width="470.0" height="217" rx="18" fill="white" stroke="#d8e3ef" stroke-width="2"/>
+<rect x="340" y="365" width="95" height="83" rx="6" fill="#edf4fd" stroke="#3668a8" stroke-width="3"/>
+<rect x="325" y="382" width="95" height="83" rx="6" fill="white" stroke="#3668a8" stroke-width="3"/>
+<polyline points="343,404 402,404" stroke="#3668a8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="343,420 402,420" stroke="#3668a8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="343,436 402,436" stroke="#3668a8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="293.0" y="505" fill="#3668a8" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">영수증 업로드</text>
+<text x="332.0" y="540" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">JPG / PNG</text>
+<rect x="885.0" y="335" width="470.0" height="217" rx="18" fill="white" stroke="#d8e3ef" stroke-width="2"/>
+<rect x="1060" y="370" width="120" height="26" rx="6" fill="white" stroke="#27806a" stroke-width="3"/>
+<ellipse cx="1078.0" cy="383.0" rx="4.0" ry="4.0" fill="#27806a" stroke="#27806a" stroke-width="1"/>
+<polyline points="1100,383 1160,383" stroke="#27806a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1060" y="403" width="120" height="26" rx="6" fill="white" stroke="#27806a" stroke-width="3"/>
+<ellipse cx="1078.0" cy="416.0" rx="4.0" ry="4.0" fill="#27806a" stroke="#27806a" stroke-width="1"/>
+<polyline points="1100,416 1160,416" stroke="#27806a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1060" y="436" width="120" height="26" rx="6" fill="white" stroke="#27806a" stroke-width="3"/>
+<ellipse cx="1078.0" cy="449.0" rx="4.0" ry="4.0" fill="#27806a" stroke="#27806a" stroke-width="1"/>
+<polyline points="1100,449 1160,449" stroke="#27806a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1069.0078125" y="505" fill="#27806a" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">FastAPI</text>
+<text x="1013.5" y="540" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">입력 검증 · OCR 중계</text>
+<rect x="1660.0" y="335" width="550.0" height="217" rx="18" fill="white" stroke="#d8e3ef" stroke-width="2"/>
+<rect x="1897" y="375" width="76" height="76" rx="10" fill="#edf4fd" stroke="#b57a2c" stroke-width="4"/>
+<polyline points="1897,391 1882,391" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1913,375 1913,360" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1973,391 1988,391" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1913,451 1913,466" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1897,413 1882,413" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1935,375 1935,360" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1973,413 1988,413" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1935,451 1935,466" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1897,435 1882,435" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1957,375 1957,360" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1973,435 1988,435" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1957,451 1957,466" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1920.0" y="421" fill="#b57a2c" font-family="Malgun Gothic, sans-serif" font-size="30" font-weight="700">AI</text>
+<text x="1851.5234375" y="505" fill="#b57a2c" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">CLOVA OCR</text>
+<text x="1816.0" y="540" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">텍스트·좌표·신뢰도 반환</text>
+<path d="M 620 440 L 885 440" stroke="#3668a8" stroke-width="4" fill="none"/>
+<polygon points="885,440 872.58207108109,446.46490845758075 872.58207108109,433.53509154241925" fill="#3668a8"/>
+<polygon points="620,440 632.41792891891,433.53509154241925 632.41792891891,446.46490845758075" fill="#3668a8"/>
+<rect x="654.0" y="377" width="196.0" height="35" rx="5" fill="white" stroke="white" stroke-width="1"/>
+<text x="666.0" y="403" fill="#3668a8" font-family="Malgun Gothic, sans-serif" font-size="23" font-weight="700">① 이미지 / 결과</text>
+<path d="M 1355 440 L 1660 440" stroke="#b57a2c" stroke-width="4" fill="none"/>
+<polygon points="1660,440 1647.58207108109,446.46490845758075 1647.58207108109,433.53509154241925" fill="#b57a2c"/>
+<polygon points="1355,440 1367.41792891891,433.53509154241925 1367.41792891891,446.46490845758075" fill="#b57a2c"/>
+<rect x="1445.0" y="377" width="126.0" height="35" rx="5" fill="white" stroke="white" stroke-width="1"/>
+<text x="1457.0" y="403" fill="#b57a2c" font-family="Malgun Gothic, sans-serif" font-size="23" font-weight="700">② HTTPS</text>
+<rect x="885.0" y="755" width="470.0" height="217" rx="18" fill="white" stroke="#d8e3ef" stroke-width="2"/>
+<rect x="1054" y="790" width="132" height="81" rx="10" fill="white" stroke="#27806a" stroke-width="4"/>
+<polyline points="1055,814 1185,814" stroke="#27806a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse cx="1072.0" cy="803.0" rx="3.0" ry="3.0" fill="#27806a" stroke="#27806a" stroke-width="1"/>
+<ellipse cx="1087.0" cy="803.0" rx="3.0" ry="3.0" fill="#27806a" stroke="#27806a" stroke-width="1"/>
+<ellipse cx="1102.0" cy="803.0" rx="3.0" ry="3.0" fill="#27806a" stroke="#27806a" stroke-width="1"/>
+<ellipse cx="1120.0" cy="838.5" rx="14.0" ry="12.5" fill="#edf4fd" stroke="#27806a" stroke-width="3"/>
+<polyline points="1090,862 1100,852 1140,852 1150,862" stroke="#27806a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1042.5" y="925" fill="#27806a" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">영수증 파서</text>
+<text x="997.0" y="960" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">영역·날짜·금액 규칙 추출</text>
+<path d="M 1120 552 L 1120 750" stroke="#27806a" stroke-width="4" fill="none"/>
+<polygon points="1120,750 1113.5350915424192,737.58207108109 1126.4649084575808,737.58207108109" fill="#27806a"/>
+<polygon points="1120,552 1126.4649084575808,564.41792891891 1113.5350915424192,564.41792891891" fill="#27806a"/>
+<rect x="995.0" y="634" width="250.0" height="36" rx="5" fill="white" stroke="white" stroke-width="1"/>
+<text x="1007.0" y="661" fill="#27806a" font-family="Malgun Gothic, sans-serif" font-size="24" font-weight="700">③ OCR 좌표 → 후보</text>
+<rect x="150.0" y="755" width="470.0" height="217" rx="18" fill="white" stroke="#d8e3ef" stroke-width="2"/>
+<rect x="319" y="790" width="132" height="81" rx="10" fill="white" stroke="#3668a8" stroke-width="4"/>
+<polyline points="320,814 450,814" stroke="#3668a8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse cx="337.0" cy="803.0" rx="3.0" ry="3.0" fill="#3668a8" stroke="#3668a8" stroke-width="1"/>
+<ellipse cx="352.0" cy="803.0" rx="3.0" ry="3.0" fill="#3668a8" stroke="#3668a8" stroke-width="1"/>
+<ellipse cx="367.0" cy="803.0" rx="3.0" ry="3.0" fill="#3668a8" stroke="#3668a8" stroke-width="1"/>
+<ellipse cx="385.0" cy="838.5" rx="14.0" ry="12.5" fill="#edf4fd" stroke="#3668a8" stroke-width="3"/>
+<polyline points="355,862 365,852 405,852 415,862" stroke="#3668a8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="313.0" y="925" fill="#3668a8" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">확인 · 수정</text>
+<text x="262.0" y="960" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">원본·인식 영역·일정 후보</text>
+<path d="M 885 860 L 620 860" stroke="#27806a" stroke-width="4" fill="none"/>
+<polygon points="620,860 632.41792891891,853.5350915424192 632.41792891891,866.4649084575808" fill="#27806a"/>
+<rect x="674.5" y="795" width="155.0" height="35" rx="5" fill="white" stroke="white" stroke-width="1"/>
+<text x="686.5" y="821" fill="#27806a" font-family="Malgun Gothic, sans-serif" font-size="23" font-weight="700">④ 추출 결과</text>
+<rect x="130.0" y="1095" width="510.0" height="217" rx="18" fill="white" stroke="#d8e3ef" stroke-width="2"/>
+<rect x="319" y="1130" width="132" height="81" rx="10" fill="white" stroke="#3668a8" stroke-width="4"/>
+<polyline points="320,1154 450,1154" stroke="#3668a8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse cx="337.0" cy="1143.0" rx="3.0" ry="3.0" fill="#3668a8" stroke="#3668a8" stroke-width="1"/>
+<ellipse cx="352.0" cy="1143.0" rx="3.0" ry="3.0" fill="#3668a8" stroke="#3668a8" stroke-width="1"/>
+<ellipse cx="367.0" cy="1143.0" rx="3.0" ry="3.0" fill="#3668a8" stroke="#3668a8" stroke-width="1"/>
+<ellipse cx="385.0" cy="1178.5" rx="14.0" ry="12.5" fill="#edf4fd" stroke="#3668a8" stroke-width="3"/>
+<polyline points="355,1202 365,1192 405,1192 415,1202" stroke="#3668a8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="264.5" y="1265" fill="#3668a8" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">환자별 기록 · 일정</text>
+<text x="259.0078125" y="1300" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">React 메모리 · DB 미연동</text>
+<path d="M 385 972 L 385 1090" stroke="#3668a8" stroke-width="4" fill="none"/>
+<polygon points="385,1090 378.53509154241925,1077.58207108109 391.46490845758075,1077.58207108109" fill="#3668a8"/>
+<rect x="289.0" y="1013" width="192.0" height="36" rx="5" fill="white" stroke="white" stroke-width="1"/>
+<text x="301.0" y="1040" fill="#3668a8" font-family="Malgun Gothic, sans-serif" font-size="24" font-weight="700">⑤ 확인 후 반영</text>
+<rect x="885.0" y="1095" width="470.0" height="217" rx="18" fill="white" stroke="#d8e3ef" stroke-width="2"/>
+<rect x="1075" y="1125" width="95" height="83" rx="6" fill="#edf4fd" stroke="#27806a" stroke-width="3"/>
+<rect x="1060" y="1142" width="95" height="83" rx="6" fill="white" stroke="#27806a" stroke-width="3"/>
+<polyline points="1078,1164 1137,1164" stroke="#27806a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1078,1180 1137,1180" stroke="#27806a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1078,1196 1137,1196" stroke="#27806a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1013.5" y="1265" fill="#27806a" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">OCR 원본 JSON</text>
+<text x="1024.0" y="1300" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">백엔드 디버그 보관</text>
+<polyline points="1355,500 1410,500 1410,1060 1120,1060 1120,1090" stroke="#27806a" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 1120 1060 L 1120 1090" stroke="#27806a" stroke-width="4" fill="none"/>
+<polygon points="1120,1090 1113.5350915424192,1077.58207108109 1126.4649084575808,1077.58207108109" fill="#27806a"/>
+<rect x="1660.0" y="1005" width="550.0" height="217" rx="18" fill="white" stroke="#d8e3ef" stroke-width="2"/>
+<rect x="1890" y="1035" width="95" height="83" rx="6" fill="#edf4fd" stroke="#80609d" stroke-width="3"/>
+<rect x="1875" y="1052" width="95" height="83" rx="6" fill="white" stroke="#80609d" stroke-width="3"/>
+<polyline points="1893,1074 1952,1074" stroke="#80609d" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1893,1090 1952,1090" stroke="#80609d" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="1893,1106 1952,1106" stroke="#80609d" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="1868.5" y="1175" fill="#80609d" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">PDF / ZIP</text>
+<text x="1788.5" y="1210" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">선택 영수증 합치기·개별 출력</text>
+<polyline points="640,1200 730,1200 730,1030 1640,1030 1640,1110 1660,1110" stroke="#80609d" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 1640 1110 L 1660 1110" stroke="#80609d" stroke-width="4" fill="none"/>
+<polygon points="1660,1110 1647.58207108109,1116.4649084575808 1647.58207108109,1103.5350915424192" fill="#80609d"/>
+<rect x="1369.5" y="989" width="301.0" height="35" rx="5" fill="white" stroke="white" stroke-width="1"/>
+<text x="1381.5" y="1015" fill="#80609d" font-family="Malgun Gothic, sans-serif" font-size="23" font-weight="700">⑥ 선택한 영수증 내보내기</text>
+<text x="67" y="1424" fill="#64778b" font-family="Malgun Gothic, sans-serif" font-size="24" font-weight="400">사용자 확인 전 추출값은 후보입니다. 진단·의료 판단 또는 보험 청구 전송 기능이 아닙니다.</text>
+<text x="67" y="1464" fill="#64778b" font-family="Malgun Gothic, sans-serif" font-size="24" font-weight="400">DB·LLM 요약은 현재 코드에 없음 · 화면 메모리는 새로고침 시 유지되지 않음</text>
+</svg>
