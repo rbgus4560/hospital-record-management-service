@@ -1,0 +1,40 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+
+backend/.env
+backend/.venv/
+backend/__pycache__/
+
+# 공개 제외: 로컬 생성물·비밀 설정
+backend/ocr_results/
+backend/uploads/
+uploads/
+.env
+.env.*
+!.env.example
+!backend/.env.example
+__pycache__/
+*.pyc

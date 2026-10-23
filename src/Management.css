@@ -1,0 +1,239 @@
+.main-content {
+  max-width: none;
+  margin: 0;
+}
+
+.management-notice {
+  flex-shrink: 0;
+  margin-bottom: 16px;
+  color: #007e83;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.management-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: #718096;
+}
+
+.management-empty h3 {
+  margin-bottom: 12px;
+  color: #17283f;
+}
+
+.management-empty p {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.management-empty button {
+  margin-top: 16px;
+}
+
+.patient-table-wrap {
+  overflow-x: auto;
+}
+
+.patient-table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.patient-table th {
+  padding: 15px;
+  background: #f1f5f8;
+  text-align: left;
+}
+
+.patient-table td {
+  padding: 20px 15px;
+  border-bottom: 1px solid #e7edf2;
+  overflow-wrap: anywhere;
+}
+
+.patient-table th:last-child,
+.patient-table td:last-child {
+  width: 190px;
+}
+
+.patient-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.selected-patient-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  color: #007e83;
+  background: #dff4f1;
+  font-size: 11px;
+}
+
+.danger-button {
+  flex-shrink: 0;
+  padding: 7px 8px;
+  border: 0;
+  background: transparent;
+  color: #c34949;
+  font-size: 13px;
+}
+
+.document-open {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 7px;
+  padding: 4px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.document-open strong {
+  font-size: 14px;
+}
+
+.document-open span {
+  color: #718096;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.management-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(15 30 45 / 55%);
+}
+
+.management-modal {
+  width: min(620px, 100%);
+  max-height: 90dvh;
+  padding: 24px;
+  overflow-y: auto;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.management-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.management-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.management-form input,
+.management-form select,
+.management-form textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #dce4eb;
+  border-radius: 7px;
+  color: #17283f;
+  background: #fff;
+  font: inherit;
+  font-weight: 400;
+}
+
+.management-form textarea {
+  resize: vertical;
+}
+
+.management-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e7edf2;
+}
+
+.registration-photo p {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #718096;
+  overflow-wrap: anywhere;
+}
+
+.registration-photo img {
+  display: block;
+  max-width: 100%;
+  max-height: 240px;
+  margin-inline: auto;
+  object-fit: contain;
+}
+
+.original-document {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.management-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .sidebar-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .management-backdrop {
+    padding: 12px;
+  }
+
+  .management-modal {
+    padding: 18px;
+  }
+}
+
+
+.ocr-result {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e7ef;
+}
+
+.ocr-result p {
+  margin-top: 8px;
+  color: #718096;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.ocr-result pre {
+  max-height: 350px;
+  padding: 16px;
+  overflow: auto;
+  border-radius: 8px;
+  background: #f3f6f9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.ocr-result summary {
+  cursor: pointer;
+  margin-top: 16px;
+  color: #007e83;
+  font-size: 13px;
+}

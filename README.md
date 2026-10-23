@@ -2,7 +2,7 @@
 
 **병원 영수증 사진을 OCR로 읽고, 추출된 정보·진료/검사 일정을 사용자가 확인·수정한 뒤 환자별로 확인하고 PDF로 내보내는 웹 과제입니다.**
 
-> 문서 기준: 2026-10-22 제공된 로컬 코드. GitHub에는 문서·구성도를 우선 공유하며 실행 소스 동기화는 별도입니다. 현재 구현은 **React + FastAPI + CLOVA OCR**입니다. Java·Spring Boot·PostgreSQL·LLM 요약은 제공 코드에 없습니다.
+> 2026-10-23 프런트엔드·백엔드 소스와 설정 예시를 추가했습니다. 현재 구현은 **React + FastAPI + CLOVA OCR**입니다. Java·Spring Boot·PostgreSQL·LLM 요약은 제공 코드에 없습니다.
 
 ## 대표 화면
 
@@ -100,15 +100,15 @@
 
 ## 실행 방법
 
-아래는 제공된 로컬 소스 기준입니다. GitHub의 문서만으로 실행되는 배포본은 아닙니다.
+프런트엔드와 Python API를 각각 실행합니다. 실제 OCR 호출에는 본인의 CLOVA OCR 설정이 필요합니다.
 
 ### 백엔드
 
-기존 Python 환경을 쓰거나 필요한 의존성을 별도 준비합니다. 백엔드 requirements 파일은 제공 자료에 없습니다. 아래 패키지는 현재 import·실행 구조 기준이며 이번에 설치하거나 변경하지 않았습니다.
+Python 3.13 환경을 준비하고 백엔드 의존성을 설치합니다. requirements는 기존 환경 버전 기준이며 새 환경 설치는 이번에 수행하지 않았습니다. `backend/.env.example`을 `.env`로 복사해 본인의 OCR 설정을 입력합니다.
 
 ```powershell
 cd backend
-python -m pip install fastapi uvicorn requests python-dotenv pydantic
+python -m pip install -r requirements.txt
 python -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
