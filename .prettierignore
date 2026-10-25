@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.setup.local/
+backend/.venv/
+backend/ocr_results/
+docs/history/
+package-lock.json
+.env
+.env.*

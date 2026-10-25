@@ -2,7 +2,7 @@
 
 **병원 영수증 사진을 OCR로 읽고, 추출된 정보·진료/검사 일정을 사용자가 확인·수정한 뒤 환자별로 확인하고 PDF로 내보내는 웹 과제입니다.**
 
-> 2026-10-23 프런트엔드·백엔드 소스와 설정 예시를 추가했습니다. 현재 구현은 **React + FastAPI + CLOVA OCR**입니다. Java·Spring Boot·PostgreSQL·LLM 요약은 제공 코드에 없습니다.
+> 2026-10-26 기준 **React + FastAPI + CLOVA OCR + PostgreSQL** 구현을 반영했습니다. 환자별 문서·일정 DB 저장, 재조회, 원본 검수, UI 개선과 PDF·ZIP 다운로드를 포함합니다. Java·Spring Boot·LLM 요약은 구현하지 않았습니다.
 
 ## 대표 화면
 
@@ -24,18 +24,18 @@
 | 개발 기간 | 2주 — 사용자 확인 |
 | 형태 | 개인 웹 과제 — 사용자 확인 |
 | 구현 범위 | React 화면, Python OCR 중계·영수증 파서, 사용자 검수, 일정·PDF 출력 |
-| 현재 저장 | React 메모리 상태 / 백엔드 OCR 디버그 JSON. DB 영구 저장 미구현 |
+| 현재 저장 | PostgreSQL 저장·초기화 및 실제 DB 통합 테스트 통과 (2026-10-25) |
 
 ### 개발 환경
 
 | 항목 | 내용 |
 |---|---|
 | 운영체제 | Windows |
-| 프런트엔드 | Node.js v24.19.0으로 빌드 확인 / Vite 개발 서버 |
-| 백엔드 | 로컬 `.venv` 설정 Python 3.13.9 |
+| 프런트엔드 | Node.js v24.22.1으로 빌드 확인 / Vite 개발 서버 |
+| 백엔드 | 로컬 `.venv` Python 3.13.12 |
 | API | FastAPI, 기본 실행 안내 `127.0.0.1:8000` |
 | OCR | CLOVA OCR V2 외부 HTTPS API |
-| 저장 방식 | React `useState` 임시 보관. 새로고침 시 화면 데이터가 유지되지 않음 |
+| 저장 방식 | PostgreSQL 저장·초기 조회, React 상태는 화면 표시용 캐시 |
 
 ### 개발 도구
 
@@ -44,7 +44,7 @@
 | 프런트 패키지·빌드 | npm, Vite | 의존성 설치·개발 서버·정적 빌드 |
 | 백엔드 실행 | venv, pip, Uvicorn | Python 격리 환경·ASGI 서버 |
 | 문서 보조 | Codex | 코드 분석·구성도·문서 작성 |
-| 저장소 | GitHub | 프로젝트 문서 공유 |
+| 저장소 | GitHub | 구현 코드·설정 예시·문서 버전 관리 |
 | IDE | 미확인 | 확인 전 특정 제품을 기재하지 않음 |
 
 ### 라이브러리·프레임워크
@@ -69,7 +69,7 @@
 
 [SVG 원본](docs/images/system-architecture.svg) · [이미지 생성 소스](docs/diagrams/build_architecture.py)
 
-**React 업로드 → FastAPI 입력 검증 → CLOVA OCR → 좌표 기반 규칙 파서 → 사용자 확인·수정 → React 기록·일정 / PDF 다운로드** 흐름입니다. OCR 원본 JSON은 백엔드 디버그용이며 환자 기록의 DB 저장소가 아닙니다.
+**React 업로드 → FastAPI 입력 검증 → CLOVA OCR → 좌표 기반 규칙 파서 → 사용자 확인·수정 → FastAPI 저장 API → PostgreSQL → React 재조회 / PDF 다운로드** 흐름입니다. OCR 원본 JSON은 백엔드 디버그용이며 환자 기록의 DB 저장소가 아닙니다. 위 이미지 구성도는 DB 도입 전 자료이며, 현재 저장 흐름은 검수 결과 → FastAPI 저장 API → PostgreSQL입니다.
 
 ## 핵심 기능
 
@@ -89,8 +89,8 @@
 
 ### 확인된 일정과 환자별 문서
 
-- 환자·문서·일정을 React 상태로 관리하고 사용자 확인 후 일정을 반영합니다.
-- 문서 삭제 시 관련 기록도 관리합니다. 현재는 DB나 localStorage 영구 저장 기능이 아닙니다.
+- 환자·문서·일정을 React 상태로 관리하고 사용자 확인 후 문서와 일정을 같은 DB 트랜잭션으로 저장합니다.
+- 문서 삭제 시 관련 기록도 관리합니다. PostgreSQL 저장 코드를 연결했습니다. 이 컴퓨터에서는 DB 설정·초기화 및 통합 테스트를 완료했습니다. 다른 환경에서는 별도 설정과 초기화가 필요합니다.
 - OCR 원본 JSON은 `backend/ocr_results/`에 디버그 저장될 수 있으며 저장 실패 상태도 응답합니다. 실제 의료 자료는 저장소에 올리지 않습니다.
 
 ### 보험 청구용 파일 준비
@@ -98,47 +98,75 @@
 - 영수증을 선택하고 날짜 순으로 하나의 PDF로 합치거나 개별 PDF를 ZIP으로 받습니다.
 - 브라우저에서 파일을 생성합니다. 보험사로 청구를 전송하거나 자격·지급 여부를 판단하지 않습니다.
 
+## PostgreSQL 저장 설정
+
+기존 OCR 설정과 별도로 DB 연결 정보와 초기화가 필요합니다. [테이블 설계·DB 설정·API·테스트](docs/database.md)를 참고하세요.
+실제 DB 비밀번호와 의료 자료는 Git에 올리지 않습니다. 현재 로그인·사용자별 접근 권한은 미구현이므로 로컬 시연 범위입니다.
+
 ## 실행 방법
 
-프런트엔드와 Python API를 각각 실행합니다. 실제 OCR 호출에는 본인의 CLOVA OCR 설정이 필요합니다.
+다른 PC의 전체 설치와 기존 DB 기록 이동은 [학교 PC 실행 안내](docs/school-pc-setup.md)를 참고하세요. Git clone은 실제 기록이나 `.env`를 복사하지 않습니다. PostgreSQL 18.x와 Node.js 24.x, Python 3.13.x를 먼저 준비합니다. DBeaver는 선택 사항입니다.
+
+### 최초 준비
+
+프로젝트 루트의 PowerShell에서 실행합니다. `.env` 복사는 처음 한 번만 하며 기존 파일을 덮어쓰지 않습니다.
+
+```powershell
+npm.cmd ci
+py -3.13 -m venv backend\.venv
+.\backend\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
+Copy-Item backend\.env.example backend\.env
+```
+
+`backend/.env`에서 CLOVA OCR URL·Secret과 **현재 PC의** DB 비밀번호를 입력한 뒤 초기화합니다. Secret을 프런트나 Git에 넣지 않습니다. PostgreSQL 서비스 실행과 DB 생성 권한이 필요합니다.
+
+```powershell
+.\backend\.venv\Scripts\python.exe backend\init_db.py
+```
 
 ### 백엔드
 
-Python 3.13 환경을 준비하고 백엔드 의존성을 설치합니다. requirements는 기존 환경 버전 기준이며 새 환경 설치는 이번에 수행하지 않았습니다. `backend/.env.example`을 `.env`로 복사해 본인의 OCR 설정을 입력합니다.
-
 ```powershell
 cd backend
-python -m pip install -r requirements.txt
-python -m uvicorn main:app --host 127.0.0.1 --port 8000
+.\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
-`backend/.env`에는 `CLOVA_OCR_URL`, `CLOVA_OCR_SECRET`이 필요합니다. 실제 값은 공개하지 않습니다. OCR 실행은 외부 서비스 호출과 이미지 전송이 발생합니다.
+API 문서는 `http://127.0.0.1:8000/docs`입니다. 루트 `/`의 404는 정상입니다. 실제 OCR 호출에는 외부 인터넷과 유효한 CLOVA 설정이 필요합니다.
 
 ### 프런트엔드
 
-다른 터미널에서 프로젝트 루트로 이동합니다.
+다른 터미널에서 프로젝트 루트 기준으로 실행합니다.
 
 ```powershell
-npm ci
-npm run dev -- --port 5173
+npm.cmd run dev -- --host 127.0.0.1 --port 5173 --strictPort
 ```
 
-브라우저에서 Vite가 안내하는 주소를 엽니다. 현재 프런트 API 주소는 `127.0.0.1:8000`으로 고정돼 있고 CORS는 로컬 5173/5174를 허용합니다. 다른 PC나 배포 환경에서 그대로 동작한다고 가정하지 않습니다.
+화면은 `http://127.0.0.1:5173`입니다. API 기본 주소는 `http://127.0.0.1:8000`이며 `VITE_API_BASE_URL`로 변경할 수 있습니다. 현재 CORS는 로컬 5173/5174를 허용합니다. `npm.cmd`를 사용하면 PowerShell의 `npm.ps1` 실행 정책 오류를 피할 수 있습니다.
 
 ## 검증 결과
 
-| 항목 | 2026-10-22 확인 |
+| 항목 | 확인 범위 |
 |---|---|
-| 프런트 빌드 | `npm run build` 통과, Vite 8.3.4 / Node v24.19.0 |
-| 빌드 제한 | 500kB 초과 청크 경고 관찰. 실패가 아닌 번들 크기 경고로 기록 |
-| Python | 백엔드 2개 소스 AST 구문 검사 통과 |
-| 순수 파서 | 합성 입력 2개: 빈 OCR 입력의 검수 경고·후보 없음, 쉼표 금액 변환 통과 |
-| 미실행 | CLOVA 실제 호출, 실제 의료 JSON 분석, API 전체 실행, 화면 상호작용·PDF 다운로드 시연, 정확도 측정 |
+| 프런트 | 전체 ESLint·Prettier 검사·프로덕션 빌드 통과 |
+| Python | Ruff 포맷 검사 및 실제 PostgreSQL 테스트 3개 통과 |
+| DB 통합 테스트 | CRUD·다른 클라이언트 재조회·환자 삭제 보호·버전 충돌·문서/일정 롤백 |
+| 사용자 실행 | 업로드·실제 OCR·일정 반영·수정 및 저장된 기록 확인 |
+| 남은 검증 | 최신 UI·PDF/ZIP 전체 시연, 표본별 OCR 정확도, 학교 PC 실제 실행 |
+| 기존 경고 | 500kB 초과 번들 경고, TestClient의 httpx 사용 중단 예정 안내 |
 
-실제 환자 파일·OCR 원본 JSON은 이번 분석에서 읽지 않았습니다. 구문·빌드 검증과 실제 OCR 인식·업무 적합성은 구분합니다.
+자동 테스트는 자체 임시 스키마의 합성 데이터만 사용합니다. 테스트 3개는 OCR 평가 표본 수가 아닙니다. 실제 의료 자료나 비밀 설정은 저장소에 올리지 않습니다. 자세한 날짜별 결과는 [검증 기록](docs/validation.md)에 보존합니다.
+
+## 코드 정리와 검사
+
+파일별 역할은 [코드 안내](docs/code-guide.md)를 참고하세요. JS/JSX는 공백 2칸(Prettier), Python은 공백 4칸(Ruff)으로 정리합니다. 프런트는 `npm.cmd run format:check`, `npm.cmd run lint`, `npm.cmd run build`로 확인합니다.
 
 ## 상세 문서
 
+- [학교 PC 설치·실행과 DB 기록 이동](docs/school-pc-setup.md)
+
+- [전체 폴더 구조·파일별 존재 이유와 역할](docs/project-structure.md)
+
+- [PostgreSQL 테이블·저장 API](docs/database.md)
 - [프로젝트 분석·코드 근거](docs/project-summary.md)
 - [개발 과정](docs/development-history.md)
 - [설계 결정](docs/decisions.md)
@@ -162,6 +190,6 @@ npm run dev -- --port 5173
 
 ### 실제 구현과 소개 문서의 차이 정리
 
-기존 GitHub 소개는 Spring Boot·PostgreSQL·LLM 요약을 제안했지만, 제공된 구현은 FastAPI·규칙 파서·React 임시 상태였습니다.
+기존 GitHub 소개는 Spring Boot·PostgreSQL·LLM 요약을 제안했지만, 초기 구현은 FastAPI·규칙 파서·React 임시 상태였습니다. 이후 PostgreSQL 저장·초기 조회와 통합 테스트를 추가했습니다.
 
-**배운 점:** 계획한 기술과 구현한 기술을 구분하고 현재 저장 범위를 정확히 설명해야 합니다. ‘DB 저장 완료’나 ‘AI 요약 구현’으로 표현하지 않습니다.
+**배운 점:** 계획한 기술과 구현한 기술을 구분하고 현재 저장 범위를 정확히 설명해야 합니다. 현재는 PostgreSQL 저장을 구현했지만, LLM 요약·로그인·공개 배포는 미구현입니다.

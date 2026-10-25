@@ -38,3 +38,10 @@ uploads/
 !backend/.env.example
 __pycache__/
 *.pyc
+
+# 로컬 검사 캐시와 DB 백업
+.ruff_cache/
+.venv/
+backups/
+*.backup
+*.dump

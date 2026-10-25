@@ -1,109 +1,37 @@
+/** 보험 청구용 영수증 선택·미리보기·파일명 편집·PDF/ZIP 생성 흐름을 관리한다. 보험사 전송 기능은 없다. */
 import { useState } from 'react'
-import { jsPDF } from 'jspdf'
+import { createPdf, downloadBlob } from './lib/pdfExport'
 import JSZip from 'jszip'
 import './InsuranceClaims.css'
+import { receiptFilename, bundleFilename, customDownloadFilename } from './downloadNames'
 
-function loadImage(url) {
-  return new Promise((resolve, reject) => {
-    const image = new Image()
-    image.onload = () => resolve(image)
-    image.onerror = () => reject(new Error('원본 사진을 읽지 못했습니다.'))
-    image.src = url
-  })
-}
-
-async function createPdf(items) {
-  let pdf
-
-  for (let index = 0; index < items.length; index += 1) {
-    const image = await loadImage(items[index].url)
-    const orientation =
-      image.naturalWidth > image.naturalHeight ? 'landscape' : 'portrait'
-
-    if (!pdf) {
-      pdf = new jsPDF({ orientation, unit: 'mm', format: 'a4' })
-    } else {
-      pdf.addPage('a4', orientation)
-    }
-
-    const canvas = document.createElement('canvas')
-    canvas.width = image.naturalWidth
-    canvas.height = image.naturalHeight
-
-    const context = canvas.getContext('2d')
-    if (!context) throw new Error('사진 변환에 실패했습니다.')
-
-    context.fillStyle = '#fff'
-    context.fillRect(0, 0, canvas.width, canvas.height)
-    context.drawImage(image, 0, 0)
-
-    const pageWidth = pdf.internal.pageSize.getWidth()
-    const pageHeight = pdf.internal.pageSize.getHeight()
-    const scale = Math.min(
-      (pageWidth - 16) / canvas.width,
-      (pageHeight - 16) / canvas.height,
-    )
-
-    const width = canvas.width * scale
-    const height = canvas.height * scale
-
-    pdf.addImage(
-      canvas.toDataURL('image/png'),
-      'PNG',
-      (pageWidth - width) / 2,
-      (pageHeight - height) / 2,
-      width,
-      height,
-    )
-
-    canvas.width = 0
-    canvas.height = 0
-  }
-
-  return pdf
-}
-
-function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  document.body.appendChild(link)
-  link.click()
-  link.remove()
-  setTimeout(() => URL.revokeObjectURL(url), 10000)
-}
-
-function safeName(value) {
-  return value.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '_').slice(0, 80)
-}
-
-export default function InsuranceClaims({
-  receipts,
-  patientName,
-  onPreview,
-  onGoRecords,
-}) {
+export default function InsuranceClaims({ receipts, patientName, onPreview, onGoRecords }) {
   const [selectedIds, setSelectedIds] = useState([])
   const [previewId, setPreviewId] = useState(null)
   const [downloadMode, setDownloadMode] = useState('merged')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
+  const [customName, setCustomName] = useState(null)
 
   const selected = receipts.filter((item) => selectedIds.includes(item.id))
   const preview = receipts.find((item) => item.id === previewId)
   const allSelected = receipts.length > 0 && selected.length === receipts.length
+  const extension = downloadMode === 'merged' ? 'pdf' : 'zip'
+  const suggestedFilename = bundleFilename(patientName, selected, extension)
+  const suggestedBase = suggestedFilename.slice(0, -(extension.length + 1))
+  const filename =
+    customName === null
+      ? suggestedFilename
+      : customDownloadFilename(customName, extension, suggestedFilename)
 
   function toggle(id) {
     setSelectedIds((previous) =>
-      previous.includes(id)
-        ? previous.filter((value) => value !== id)
-        : [...previous, id],
+      previous.includes(id) ? previous.filter((value) => value !== id) : [...previous, id],
     )
   }
 
   async function download() {
-    if (!selected.length) return
+    if (!selected.length || busy) return
     setBusy(true)
     setMessage('')
 
@@ -112,31 +40,32 @@ export default function InsuranceClaims({
         (a, b) => a.date.localeCompare(b.date) || a.createdAt - b.createdAt,
       )
 
+      let blob
       if (downloadMode === 'merged') {
         const pdf = await createPdf(sorted)
-        downloadBlob(
-          pdf.output('blob'),
-          `${safeName(patientName)}_보험청구_영수증모음.pdf`,
-        )
+        blob = pdf.output('blob')
       } else {
         const zip = new JSZip()
 
         for (let index = 0; index < sorted.length; index += 1) {
           const item = sorted[index]
           const pdf = await createPdf([item])
-          zip.file(
-            `${String(index + 1).padStart(2, '0')}_${item.date}_${safeName(item.type)}.pdf`,
-            pdf.output('arraybuffer'),
-          )
+          zip.file(receiptFilename(patientName, item, index), pdf.output('arraybuffer'))
         }
 
-        const blob = await zip.generateAsync({ type: 'blob' })
-        downloadBlob(blob, `${safeName(patientName)}_보험청구_개별영수증.zip`)
+        blob = await zip.generateAsync({ type: 'blob' })
       }
 
-      setMessage('파일을 생성했습니다. 다운로드한 내용을 확인해주세요.')
+      downloadBlob(blob, filename)
+      setMessage(
+        `${filename} 다운로드를 요청했습니다. 저장 위치는 브라우저의 다운로드 설정을 따릅니다.`,
+      )
     } catch (error) {
-      setMessage(error.message || '파일 생성에 실패했습니다.')
+      setMessage(
+        error.name === 'AbortError'
+          ? '저장을 취소했습니다.'
+          : error.message || '파일 저장에 실패했습니다.',
+      )
     } finally {
       setBusy(false)
     }
@@ -174,9 +103,7 @@ export default function InsuranceClaims({
                   }
                 }}
                 disabled={!receipts.length || busy}
-                onChange={() =>
-                  setSelectedIds(allSelected ? [] : receipts.map((item) => item.id))
-                }
+                onChange={() => setSelectedIds(allSelected ? [] : receipts.map((item) => item.id))}
               />
               전체 선택
             </label>
@@ -184,9 +111,7 @@ export default function InsuranceClaims({
             <div className="panel-body">
               {!receipts.length && (
                 <p className="claims-empty">
-                  {patientName
-                    ? '등록된 영수증이 없습니다.'
-                    : '환자를 먼저 등록해주세요.'}
+                  {patientName ? '등록된 영수증이 없습니다.' : '환자를 먼저 등록해주세요.'}
                 </p>
               )}
 
@@ -208,10 +133,14 @@ export default function InsuranceClaims({
                     onClick={() => setPreviewId(item.id)}
                     aria-pressed={previewId === item.id}
                   >
-                    <span className="claims-file-icon" aria-hidden="true">▤</span>
+                    <span className="claims-file-icon" aria-hidden="true">
+                      ▤
+                    </span>
                     <span className="claims-row-text">
                       <strong>{item.type}</strong>
-                      <span>{item.date} · {item.hospital}</span>
+                      <span>
+                        {item.date} · {item.hospital}
+                      </span>
                     </span>
                   </button>
                 </div>
@@ -226,13 +155,16 @@ export default function InsuranceClaims({
                 className="text-button"
                 disabled={!preview}
                 onClick={(event) => onPreview(preview, event)}
-              >크게 보기</button>
+              >
+                크게 보기
+              </button>
             </div>
 
             {preview ? (
               <>
                 <p className="page-description">
-                  {preview.type}<br />
+                  {preview.type}
+                  <br />
                   {preview.date} · {preview.hospital}
                 </p>
                 <button
@@ -276,14 +208,36 @@ export default function InsuranceClaims({
             </label>
           </div>
 
-          <button
-            className="upload-button"
-            disabled={!selected.length || busy}
-            onClick={download}
-          >
-            {busy
-              ? '생성 중…'
-              : downloadMode === 'merged' ? 'PDF 다운로드' : 'ZIP 다운로드'}
+          <div className="claims-filename-control">
+            <label htmlFor="download-filename">파일 이름</label>
+            <div className="claims-filename-input">
+              <input
+                id="download-filename"
+                type="text"
+                disabled={busy || !selected.length}
+                maxLength={60}
+                value={customName ?? suggestedBase}
+                onChange={(event) => setCustomName(event.target.value)}
+              />
+              <span>.{extension}</span>
+              <button
+                type="button"
+                className="text-button"
+                disabled={busy || !selected.length}
+                onClick={() => setCustomName(null)}
+              >
+                자동 이름
+              </button>
+            </div>
+            <p className="panel-caption">
+              {selected.length
+                ? `저장 파일: ${filename}`
+                : '영수증을 선택하면 파일 이름을 정할 수 있습니다.'}
+            </p>
+          </div>
+
+          <button className="upload-button" disabled={!selected.length || busy} onClick={download}>
+            {busy ? '생성 중…' : downloadMode === 'merged' ? 'PDF 다운로드' : 'ZIP 다운로드'}
           </button>
         </footer>
 

@@ -1,17 +1,13 @@
+/** OCR 좌표를 원본 이미지 위에 표시하고 선택한 글자·인식 신뢰도를 보여준다. 업무 필드의 정확도 판정은 하지 않는다. */
 import { useState } from 'react'
 import './OcrImageViewer.css'
 
-export default function OcrImageViewer({
-  imageUrl,
-  fields = [],
-  alt = '병원 문서 원본',
-}) {
+export default function OcrImageViewer({ imageUrl, fields = [], alt = '병원 문서 원본' }) {
   const [imageSize, setImageSize] = useState(null)
   const [showBoxes, setShowBoxes] = useState(true)
   const [selectedIndex, setSelectedIndex] = useState(null)
 
-  const selectedField =
-    selectedIndex === null ? null : fields[selectedIndex]
+  const selectedField = selectedIndex === null ? null : fields[selectedIndex]
 
   const confidence = selectedField?.inferConfidence
 
@@ -21,10 +17,7 @@ export default function OcrImageViewer({
     if (
       !Array.isArray(vertices) ||
       vertices.length < 3 ||
-      vertices.some(
-        (point) =>
-          !Number.isFinite(point.x) || !Number.isFinite(point.y),
-      )
+      vertices.some((point) => !Number.isFinite(point.x) || !Number.isFinite(point.y))
     ) {
       return null
     }
@@ -48,8 +41,8 @@ export default function OcrImageViewer({
       </div>
 
       <p className="ocr-viewer-guide">
-        테두리를 클릭하면 인식된 글자를 확인할 수 있습니다.
-        신뢰도는 글자 인식의 참고값이며, 항목 연결의 정확도를 뜻하지 않습니다.
+        테두리를 클릭하면 인식된 글자를 확인할 수 있습니다. 신뢰도는 글자 인식의 참고값이며, 항목
+        연결의 정확도를 뜻하지 않습니다.
       </p>
 
       <div className="ocr-image-frame">
@@ -78,11 +71,7 @@ export default function OcrImageViewer({
                 <polygon
                   key={index}
                   points={points}
-                  className={
-                    selectedIndex === index
-                      ? 'ocr-box is-selected'
-                      : 'ocr-box'
-                  }
+                  className={selectedIndex === index ? 'ocr-box is-selected' : 'ocr-box'}
                   tabIndex={0}
                   role="button"
                   aria-label={`인식 글자 ${field.inferText || '빈 값'}`}

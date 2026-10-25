@@ -1,0 +1,3 @@
+# TestClient 통합 테스트와 Python 포맷 검사에만 필요한 개발 패키지.
+httpx==0.28.1
+ruff==0.17.2

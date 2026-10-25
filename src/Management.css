@@ -1,3 +1,4 @@
+/* 환자 표, 등록 폼, 공통 모달과 좌우 OCR 검수창의 배치·버튼 스타일. */
 .main-content {
   max-width: none;
   margin: 0;
@@ -205,7 +206,6 @@
   }
 }
 
-
 .ocr-result {
   margin-top: 24px;
   padding-top: 20px;
@@ -236,4 +236,127 @@
   margin-top: 16px;
   color: #007e83;
   font-size: 13px;
+}
+.patient-table th,
+.patient-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+.patient-table th:last-child,
+.patient-table td:last-child {
+  width: 260px;
+}
+.patient-actions {
+  justify-content: center;
+  gap: 16px;
+}
+.patient-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  min-height: 38px;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+.patient-actions .danger-button {
+  border: 1px solid #efcccc;
+  border-radius: 7px;
+  background: #fff;
+}
+.patient-actions .danger-button:hover {
+  background: #fff3f3;
+}
+
+/* 높이는 유지하고 원본과 수정 폼을 나란히 독립 스크롤한다. */
+.management-backdrop {
+  overflow: auto;
+}
+.review-modal {
+  display: flex;
+  flex-direction: column;
+  width: min(1400px, calc(100vw - 48px));
+  min-width: 1120px;
+  height: 90dvh;
+  overflow: hidden;
+}
+.review-modal > .panel-header,
+.review-modal > .page-description {
+  flex-shrink: 0;
+}
+.review-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+}
+.review-original,
+.ocr-review-form {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.review-original {
+  padding-right: 12px;
+  border-right: 1px solid #e7edf2;
+}
+.review-original .ocr-viewer {
+  margin-top: 0;
+}
+.ocr-review-form {
+  padding: 0 8px 0 0;
+}
+.ocr-review-form .management-form-actions {
+  position: sticky;
+  bottom: 0;
+  padding-block: 14px;
+  background: #fff;
+}
+/* 좁은 화면에서도 검수창의 왼쪽 끝까지 스크롤로 접근할 수 있게 한다. */
+@media (max-width: 1168px) {
+  .management-backdrop:has(.review-modal) {
+    display: block;
+  }
+  .review-modal {
+    margin-inline: 0;
+  }
+}
+
+.record-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.record-header-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 92px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.record-delete-button {
+  color: #b73535;
+  background: #fff3f3;
+  border-color: #edc5c5 !important;
+}
+.record-delete-button:hover:not(:disabled) {
+  background: #ffe4e4;
+}
+.record-delete-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.document-item > input[type='radio'] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: #009395;
 }

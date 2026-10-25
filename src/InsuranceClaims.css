@@ -1,3 +1,4 @@
+/* 보험 청구 준비 화면의 목록·미리보기·파일명 입력·다운로드 영역 스타일. */
 .claims-page-wrapper {
   height: 100%;
   min-height: 0;
@@ -51,8 +52,8 @@
   font-weight: 700;
 }
 
-.claims-shell input[type="checkbox"],
-.claims-shell input[type="radio"] {
+.claims-shell input[type='checkbox'],
+.claims-shell input[type='radio'] {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
@@ -261,65 +262,40 @@
   height: auto;
 }
 
-@media (max-width: 1100px) {
-  .claims-download-panel {
-    flex-wrap: wrap;
-  }
-
-  .claims-download-panel .upload-button {
-    margin-left: auto;
-  }
-
-  .claims-row {
-    padding: 14px 4px;
-    gap: 8px;
-  }
-
-  .claims-row-button {
-    gap: 9px;
-  }
-
-  .claims-file-icon {
-    width: 34px;
-    height: 34px;
-    font-size: 22px;
-  }
+.claims-download-panel {
+  flex-wrap: wrap;
+  gap: 20px;
 }
-
-@media (max-width: 760px) {
-  .claims-page-wrapper,
-  .claims-shell,
-  .claims-content {
-    height: auto;
-  }
-
-  .claims-heading {
-    align-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .claims-columns {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .claims-list-panel {
-    max-height: 400px;
-  }
-
-  .claims-preview-panel {
-    height: 560px;
-  }
-
-  .claims-download-options {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .claims-download-panel .upload-button {
-    width: 100%;
-  }
-
-  .claims-modal-backdrop {
-    padding: 12px;
-  }
+.claims-filename-control {
+  flex: 1;
+  min-width: 280px;
+}
+.claims-filename-control > label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.claims-filename-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.claims-filename-input input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid #dce4eb;
+  border-radius: 7px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+}
+.claims-filename-input > span {
+  color: #718096;
+  font-size: 13px;
+}
+.claims-filename-control .panel-caption {
+  overflow-wrap: anywhere;
 }

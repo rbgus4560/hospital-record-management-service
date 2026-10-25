@@ -1,5 +1,6 @@
+/* 전역 색상·글꼴·박스 크기·기본 요소와 키보드 포커스 표시. */
 :root {
-  font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  font-family: 'Pretendard', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
   color: #17283f;
   background: #f6f8fb;
   font-synthesis: none;

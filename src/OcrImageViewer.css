@@ -1,3 +1,4 @@
+/* OCR 원본 이미지와 SVG 좌표 오버레이, 선택 영역·신뢰도 표시 스타일. */
 .ocr-viewer {
   margin-top: 16px;
 }

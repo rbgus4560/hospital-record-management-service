@@ -1,0 +1,7 @@
+# 줄바꿈을 LF로 통일하고 이미지·문서는 바이너리로 유지한다.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.pptx binary

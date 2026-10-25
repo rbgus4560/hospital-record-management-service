@@ -4,7 +4,7 @@
 
 ## 책임과 데이터 흐름
 
-- `src/App.jsx`: 환자·문서·일정 useState, JPG/PNG 업로드, OCR API, 검수·수정 및 확인된 일정 반영. OCR 성공 메시지도 DB 저장이 아닌 임시 보관을 명시.
+- `src/App.jsx`: 환자·문서·일정 useState, JPG/PNG 업로드, OCR API, 검수·수정 및 확인된 일정 반영. DB 저장 성공 후 목록·일정을 갱신하며 초기 조회 실패 시 등록을 차단.
 - `src/OcrImageViewer.jsx`: 이미지 원본 비율에 OCR polygon을 표시하고 텍스트·신뢰도 선택.
 - `src/InsuranceClaims.jsx`: 영수증 선택·정렬, jsPDF의 이미지 PDF 및 JSZip의 개별 PDF 묶음.
 - `backend/main.py`: 이미지 형식·크기·시그니처 확인, CLOVA V2 호출, 원본 OCR JSON 디버그 저장, 결과 파싱 반환.
@@ -12,7 +12,7 @@
 
 ## 저장과 미구현 구분
 
-React 상태는 영구 DB가 아니며 새로고침에 유지되지 않는다. backend/ocr_results의 원본 OCR JSON은 디버그 자료다. Java/Spring Boot·PostgreSQL·LLM 요약은 이전 GitHub 계획에만 있었고 현재 제공 코드에는 없다. 보험 청구는 다운로드 준비이며 보험사 제출·지급 판정이 아니다.
+2026-10-25 PostgreSQL 저장 API와 React 초기 조회·저장 연결을 추가했다. DB 설정·초기화 후 영구 저장을 사용하며, 실제 DB 연결 검증 상태는 docs/validation.md에 기록한다. backend/ocr_results의 원본 OCR JSON은 디버그 자료다. Java/Spring Boot·LLM 요약은 미구현이다. 테이블과 관계는 docs/database.md를 참고한다. 보험 청구는 다운로드 준비이며 보험사 제출·지급 판정이 아니다.
 
 ## 개인정보와 환경
 
