@@ -1,0 +1,36 @@
+{
+  "receipts": [
+    {
+      "id": "receipt-01",
+      "ocr_json": "../../backend/ocr_results/여기에_실제_응답_파일명.json",
+      "regions": [
+        {
+          "name": "영수증 하단 다음 진료·검사 일정",
+          "box": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "transcript": ""
+        }
+      ],
+      "expected_schedules": [
+        {
+          "type": "진료",
+          "date": "",
+          "time": null,
+          "department": null,
+          "doctor": null
+        },
+        {
+          "type": "검사",
+          "date": "",
+          "time": null,
+          "examination": null,
+          "location": null
+        }
+      ]
+    }
+  ]
+}

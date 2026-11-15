@@ -1,0 +1,75 @@
+.patient-table-wrap {
+  overflow-x: auto;
+}
+
+.patient-table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.patient-table th {
+  padding: 15px;
+  background: #f1f5f8;
+  text-align: left;
+}
+
+.patient-table td {
+  padding: 20px 15px;
+  border-bottom: 1px solid #e7edf2;
+  overflow-wrap: anywhere;
+}
+
+.patient-table th:last-child,
+.patient-table td:last-child {
+  width: 190px;
+}
+
+.patient-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.selected-patient-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  color: #007e83;
+  background: #dff4f1;
+  font-size: 11px;
+}
+
+.patient-table th,
+.patient-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+.patient-table th:last-child,
+.patient-table td:last-child {
+  width: 260px;
+}
+.patient-actions {
+  justify-content: center;
+  gap: 16px;
+}
+.patient-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  min-height: 38px;
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+.patient-actions .danger-button {
+  border: 1px solid #efcccc;
+  border-radius: 7px;
+  background: #fff;
+}
+.patient-actions .danger-button:hover {
+  background: #fff3f3;
+}

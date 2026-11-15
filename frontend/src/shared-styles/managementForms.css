@@ -1,0 +1,152 @@
+/* 환자 표, 등록 폼, 공통 모달과 좌우 OCR 검수창의 배치·버튼 스타일. */
+.main-content {
+  max-width: none;
+  margin: 0;
+}
+
+.management-notice {
+  flex-shrink: 0;
+  margin-bottom: 16px;
+  color: #007e83;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.management-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: #718096;
+}
+
+.management-empty h3 {
+  margin-bottom: 12px;
+  color: #17283f;
+}
+
+.management-empty p {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.management-empty button {
+  margin-top: 16px;
+}
+
+.danger-button {
+  flex-shrink: 0;
+  padding: 7px 8px;
+  border: 0;
+  background: transparent;
+  color: #c34949;
+  font-size: 13px;
+}
+
+.document-open {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 7px;
+  padding: 4px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.document-open strong {
+  font-size: 14px;
+}
+
+.document-open span {
+  color: #718096;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.management-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(15 30 45 / 55%);
+}
+
+.management-modal {
+  width: min(620px, 100%);
+  max-height: 90dvh;
+  padding: 24px;
+  overflow-y: auto;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.management-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.management-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.management-form input,
+.management-form select,
+.management-form textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #dce4eb;
+  border-radius: 7px;
+  color: #17283f;
+  background: #fff;
+  font: inherit;
+  font-weight: 400;
+}
+
+.management-form textarea {
+  resize: vertical;
+}
+
+.management-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e7edf2;
+}
+
+.management-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .sidebar-nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .management-backdrop {
+    padding: 12px;
+  }
+
+  .management-modal {
+    padding: 18px;
+  }
+}
+
+/* 높이는 유지하고 원본과 수정 폼을 나란히 독립 스크롤한다. */
+.management-backdrop {
+  overflow: auto;
+}
+.document-item > input[type='radio'] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: #009395;
+}

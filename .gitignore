@@ -45,3 +45,7 @@ __pycache__/
 backups/
 *.backup
 *.dump
+
+# OCR 평가 입력·보고서 (로컬 의료 자료)
+/ocr-evaluation/local/
+/ocr-evaluation/*.docx

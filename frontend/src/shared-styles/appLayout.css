@@ -1,0 +1,360 @@
+/* 전체 화면·사이드바·캘린더·목록·검수 입력의 공통 스타일. 작은 창에서는 기준 너비를 유지한다. */
+/* PC에서는 화면 높이 안에서 배치 */
+.app-layout {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr);
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.sidebar {
+  min-height: 0;
+  padding: 28px 18px;
+  overflow-y: auto;
+  background: #fff;
+  border-right: 1px solid #e3e9f0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+
+.brand span {
+  color: #009395;
+  font-size: 29px;
+}
+
+.patient-selector {
+  margin-bottom: 26px;
+}
+
+.patient-selector label {
+  display: block;
+  margin-bottom: 8px;
+  color: #6c7b8d;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.patient-selector select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #dce4eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.nav-item {
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  text-align: left;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.nav-item:hover {
+  background: #f1f5f8;
+}
+
+.nav-item.active {
+  color: #00898e;
+  background: #e5f5f3;
+}
+
+.main-content {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 20px;
+  border: 1px solid #e0e7ef;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.panel-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+h1 {
+  font-size: 25px;
+  letter-spacing: -0.7px;
+}
+
+h2 {
+  font-size: 20px;
+  line-height: 1.4;
+  letter-spacing: -0.5px;
+}
+
+h3 {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.panel-caption {
+  margin-top: 5px;
+  color: #7b8999;
+  font-size: 12px;
+}
+
+.secondary-button {
+  padding: 7px 12px;
+  border: 1px solid #dce4eb;
+  border-radius: 7px;
+  background: #fff;
+  font-size: 13px;
+}
+
+.secondary-button:hover {
+  background: #f4f7fa;
+}
+
+.upload-button {
+  flex-shrink: 0;
+  padding: 10px 13px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  background: #009395;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.upload-button:hover {
+  background: #007d80;
+}
+
+.text-button {
+  padding: 4px 0;
+  border: 0;
+  color: #257fae;
+  background: transparent;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.visit {
+  color: #007e83;
+  background: #dff4f1;
+}
+
+.exam {
+  color: #bd6116;
+  background: #fff0df;
+}
+
+/* 일정과 문서 */
+.schedule-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 15px 0;
+  border-top: 1px solid #edf0f4;
+}
+
+.date-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 4px;
+  width: 55px;
+  min-height: 65px;
+  border-radius: 8px;
+  background: #f1f4f7;
+  font-size: 12px;
+}
+
+.date-badge strong {
+  font-size: 23px;
+}
+
+.item-details {
+  min-width: 0;
+}
+
+.type-label {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.schedule-item p,
+.document-item p {
+  margin-top: 5px;
+  color: #6d7b8d;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.document-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 0;
+  border-top: 1px solid #edf0f4;
+}
+
+.document-icon {
+  flex-shrink: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f1f4f7;
+  font-size: 22px;
+}
+
+.sample-label {
+  margin-left: auto;
+  color: #8491a1;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.empty-message {
+  padding: 24px 0;
+  color: #778496;
+  font-size: 14px;
+}
+
+/* 메뉴별 화면 */
+.page-panel {
+  height: 100%;
+}
+
+.page-description {
+  margin-bottom: 20px;
+  color: #6d7b8d;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.patient-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 0;
+  border-top: 1px solid #edf0f4;
+}
+
+.error-message {
+  margin-bottom: 16px;
+  color: #bc3434;
+  font-size: 14px;
+}
+
+.photo-preview {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #e0e7ef;
+  border-radius: 10px;
+}
+
+.preview-name {
+  color: #6d7b8d;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.photo-preview img {
+  display: block;
+  max-width: 100%;
+  max-height: 420px;
+  margin: 16px auto 0;
+  object-fit: contain;
+}
+
+/* 작은 PC 창 */
+
+/* 높이가 낮은 PC 화면 */
+
+/* 휴대폰에서는 읽기 쉬운 세로 배치 */
+
+/* OCR 확인 및 실제 일정 표시 */
+.management-modal {
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+
+/* 기준 화면보다 작아지면 압축 대신 브라우저 스크롤로 탐색한다. */
+.app-layout {
+  min-width: 1760px;
+  height: 100dvh;
+  min-height: 945px;
+}
+
+.navigation-icon {
+  width: 21px;
+  height: 21px;
+  flex-shrink: 0;
+  color: #009395;
+}
+.brand .brand-icon {
+  width: 28px;
+  height: 28px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-item > span {
+  white-space: nowrap;
+}
+.connection-notice {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  padding: 10px 18px;
+  border: 1px solid #dce4eb;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 18px #17283f14;
+  font-size: 13px;
+}
