@@ -1,213 +1,184 @@
-# 병원 영수증 OCR 기록·일정 관리 웹
+<h1 align="center">병원 영수증 OCR 기록·일정 관리 웹</h1>
 
-**병원 영수증 사진을 OCR로 읽고, 추출된 정보·진료/검사 일정을 사용자가 확인·수정한 뒤 환자별로 저장하고 보험 청구용 PDF·ZIP 파일을 만드는 웹 과제입니다.**
+<p align="center">병원 영수증에서 진료·검사 일정을 찾아, 원본을 보며 확인한 뒤 환자별 캘린더에 기록하는 웹 서비스입니다.</p>
 
-**React + FastAPI + CLOVA OCR + PostgreSQL**로 구성했습니다. 환자별 문서와 확정 일정, 생성한 청구용 파일과 사용 완료 상태를 저장합니다.
+<p align="center"><strong>개인 웹 프로젝트</strong></p>
 
-## 대표 화면
+<p align="center">
+  <code>React + Vite</code> · <code>FastAPI</code> · <code>CLOVA OCR</code> · <code>PostgreSQL</code>
+</p>
 
-개인정보를 제거한 테스트 영수증으로 촬영 후 추가할 예정입니다.
+<p align="center">
+  <img src="docs/screenshots/home-dashboard.png" alt="병원 기록 홈 화면. 월간 캘린더와 이번 달 일정, 최근 등록한 문서가 표시됩니다." width="880">
+</p>
 
-| 화면 | 보여줄 내용 |
-|---|---|
-| 문서 등록 | 환자 선택·영수증 이미지 업로드 |
-| OCR 확인 | 원본 위 인식 영역·텍스트·신뢰도와 추출 후보 확인 |
-| 기록·일정 | 사용자 확인 후 환자별 문서·진료/검사 일정 조회 |
-| 보험 청구 준비 | 선택 영수증 PDF·ZIP 생성, 환자별 묶음 보관·다시 다운로드·사용 완료 표시 |
+## 목차
+
+1. [프로젝트 개요](#프로젝트-개요)
+2. [기술 스택](#기술-스택)
+3. [폴더 구조](#폴더-구조)
+4. [설치 및 실행](#설치-및-실행)
+5. [핵심 구현](#핵심-구현)
+6. [검증 및 관련 문서](#검증-및-관련-문서)
 
 ## 프로젝트 개요
 
-영수증에 흩어진 진료비·결제 정보·다음 진료/검사 일정을 직접 다시 입력하는 흐름을 줄이는 과제입니다. OCR 결과를 곧바로 확정하지 않고 **추출 후보 → 원본 확인·수정 → 반영**으로 구분합니다.
+영수증에 적힌 다음 진료·검사 일정을 캘린더에 옮기려면 날짜와 시간을 다시 찾아 입력해야 합니다. 영수증에 접수일이나 결제일도 함께 표시될 수 있어, 어떤 날짜가 예약 일정인지 구분하는 과정이 필요합니다.
 
-| 항목 | 내용 |
-|---|---|
-| 개발 기간 | 2주 — 사용자 확인 |
-| 형태 | 개인 웹 과제 — 사용자 확인 |
-| 구현 범위 | React 화면, Python OCR 중계·영수증 파서, 사용자 검수, 일정·PDF 출력 |
-| 현재 저장 | PostgreSQL 저장·초기화 및 실제 DB 통합 테스트 통과 (2026-10-25) |
+| 구분 | 내용 |
+| --- | --- |
+| 프로젝트 형태 | 개인 웹 과제 |
+| MVP | 환자 선택 → 영수증 업로드 → 일정 후보 확인·수정 → 캘린더에서 조회 |
+| 추가 기능 | 선택한 영수증을 보험 청구용 PDF·ZIP으로 생성하고, 환자별로 보관·재다운로드·사용 완료 표시 |
 
-### 개발 환경
+[프로젝트 상세 개요](docs/getting-started/project-overview.md) · [개발 과정](docs/development/development-timeline.md)
 
-| 항목 | 내용 |
-|---|---|
-| 운영체제 | Windows |
-| 프런트엔드 | Node.js v24.22.1으로 빌드 확인 / Vite 개발 서버 |
-| 백엔드 | 로컬 `.venv` Python 3.13.12 |
-| API | FastAPI, 기본 실행 안내 `127.0.0.1:8000` |
-| OCR | CLOVA OCR V2 외부 HTTPS API |
-| 저장 방식 | PostgreSQL 저장·초기 조회, React 상태는 화면 표시용 캐시 |
+## 기술 스택
 
-### 개발 도구
+| 구분 | 기술 | 사용한 곳 |
+| --- | --- | --- |
+| 프런트엔드 | React, Vite | 환자 관리, OCR 검수, 캘린더, 보험 청구 화면 |
+| 백엔드 | Python, FastAPI, Uvicorn | 이미지 입력 검증, OCR 호출·재분석, 기록·청구 API |
+| OCR·파싱 | CLOVA OCR V2, Python | OCR 응답의 글자와 좌표를 받아 영수증 항목과 일정 후보 추출 |
+| 데이터베이스 | PostgreSQL, Psycopg | 환자, 원본 이미지와 문서, 확정 일정, 청구용 파일 저장 |
+| 파일 생성 | jsPDF, JSZip | 영수증을 PDF로 변환하고 개별 PDF를 ZIP으로 묶기 |
 
-| 구분 | 도구 | 용도 |
-|---|---|---|
-| 프런트 패키지·빌드 | npm, Vite | 의존성 설치·개발 서버·정적 빌드 |
-| 백엔드 실행 | venv, pip, Uvicorn | Python 격리 환경·ASGI 서버 |
-| 문서 보조 | Codex | 코드 분석·구성도·문서 작성 |
-| 저장소 | GitHub | 구현 코드·설정 예시·문서 버전 관리 |
-| IDE | Visual Studio Code | 개발 및 코드 탐색 |
+### 서비스 구성
 
-### 라이브러리·프레임워크
+```mermaid
+flowchart LR
+    React["React · 업로드, 검수, 캘린더"]
+    API["FastAPI · OCR, 기록, 청구 API"]
+    OCR["CLOVA OCR"]
+    Parser["Python · 영수증 파서"]
+    DB[("PostgreSQL")]
 
-| 구분 | 이름 | 버전·범위 | 용도 |
-|---|---|---|---|
-| UI | React / React DOM | package.json `^19.2.8` | 환자·문서·일정과 검수 화면 |
-| 프런트 빌드 | Vite | 선언 `^8.3.0`, 이번 빌드 8.3.4 | 개발 서버·프로덕션 번들 |
-| PDF | jsPDF | `^4.2.1` | 선택 영수증 이미지를 A4 PDF로 변환 |
-| 압축 | JSZip | `^3.10.2` | 개별 PDF 묶음 ZIP 생성 |
-| API | FastAPI / Uvicorn | 기존 환경 0.143.0 / 0.54.0 | OCR 요청·재분석 API |
-| 입력 모델 | Pydantic | 기존 환경 2.14.1 | 요청 데이터 형식·크기 검증 |
-| 외부 호출 | Requests | 기존 환경 2.34.2 | CLOVA OCR HTTPS 요청 |
-| 환경 설정 | python-dotenv | 기존 환경 1.2.4 | 백엔드 OCR URL·Secret 로딩 |
-| 파서·화면 | Python re·datetime / SVG | 표준 기능 | 좌표 기반 필드·일정 추출, OCR 영역 표시 |
+    React -->|이미지 업로드, 검수 결과 저장, 기록 조회| API
+    API -->|OCR 요청| OCR
+    OCR -->|글자, 좌표, 신뢰도| API
+    API <-->|OCR 응답 처리, 추출 후보 반환| Parser
+    API <-->|환자별 기록 저장·조회| DB
+    API -->|추출 후보, 저장된 기록| React
+```
 
-프런트는 선언된 범위와 실제 빌드 버전을 구분했습니다. 백엔드는 기존 환경 메타데이터 확인값이며 배포 잠금 파일이 아닙니다. CLOVA는 외부 OCR 서비스로, 자체 학습 모델이나 LLM 요약을 구현했다는 뜻이 아닙니다.
-
-## 전체 시스템 구성도
-
-![영수증 업로드·OCR·확인·일정·PDF 흐름](docs/architecture/images/system-architecture.png)
-
-[SVG 원본](docs/architecture/images/system-architecture.svg) · [이미지 생성 소스](docs/architecture/diagrams/generate_system_architecture.py)
-
-**React 업로드 → FastAPI 입력 검증 → CLOVA OCR → 좌표 기반 규칙 파서 → 사용자 확인·수정 → FastAPI 저장 API → PostgreSQL → React 재조회 / PDF 다운로드** 흐름입니다. OCR 원본 JSON은 백엔드 디버그용이며 환자 기록의 DB 저장소가 아닙니다. 위 이미지 구성도는 DB 도입 전 자료이며, 현재 저장 흐름은 검수 결과 → FastAPI 저장 API → PostgreSQL입니다.
+[PostgreSQL 테이블과 저장 API](docs/architecture/postgresql-schema-and-api.md)
 
 ## 폴더 구조
 
-| 경로 | 역할 |
-|---|---|
-| frontend/src/screens/ | 홈 캘린더, 환자·일정·병원 기록, 보험 청구 화면 |
-| frontend/src/api/ | React에서 FastAPI 호출 |
-| backend/ocr/ | CLOVA OCR 연동과 서울대병원 영수증 파싱 |
-| backend/database/ | PostgreSQL 연결, 테이블 SQL, 초기화 |
-| backend/insurance_claim_files_api.py | 청구용 파일 저장·조회·재다운로드·사용 완료 |
-| ocr-evaluation/ | 일정 OCR 평가 스크립트와 정답표 양식 |
-| docs/ | 실행 안내, 설계, 개발 및 검증 기록 |
+```text
+├── frontend/                           # React 화면과 FastAPI 요청
+│   └── src/
+│       ├── HospitalRecordsApp.jsx       # 앱 화면과 상태 연결
+│       ├── screens/                     # 캘린더, 환자, 일정, 병원 기록, 보험 청구 화면
+│       └── api/                         # 백엔드 API 호출
+├── backend/                            # FastAPI, OCR 처리, PostgreSQL 연동
+│   ├── main.py                          # OCR·기록·청구 라우터 연결
+│   ├── init_db.py                       # DB와 테이블 준비
+│   ├── ocr/
+│   │   ├── clova_ocr_api.py               # CLOVA 호출과 OCR 결과 재분석 API
+│   │   └── snuh_receipt_parser.py         # 좌표 기반 영수증 항목·일정 추출
+│   ├── database/                        # 연결 설정, 초기화 로직, 스키마 SQL
+│   ├── patient_document_records_api.py  # 환자·문서·일정 저장과 조회
+│   └── insurance_claim_files_api.py    # 청구용 파일 보관과 재다운로드
+├── docs/                               # 실행 안내, 설계, 개발·검증 기록
+└── ocr-evaluation/                     # 일정 추출 평가 도구와 정답표 양식
+```
 
-## 핵심 기능
+[전체 폴더 안내](docs/getting-started/project-folder-map.md) · [파일별 코드 안내](docs/development/source-code-guide.md)
 
-### 문서 업로드와 OCR 중계
+## 설치 및 실행
 
-- JPG·PNG 이미지와 요청 크기를 확인하고 실제 파일 시그니처도 검증합니다. 이미지 바이트 기준 10MB 상한입니다.
-- Secret은 백엔드 `.env`에서 읽고 React에 넣지 않습니다.
-- `POST /api/ocr`에서 OCR 결과·좌표·신뢰도와 추출 후보를 반환합니다. 타임아웃·연결 실패·잘못된 응답을 구분합니다.
-- `POST /api/ocr/parse`는 이미 받은 OCR JSON을 재분석합니다. CLOVA를 재호출하지 않습니다.
+### 실행 환경
 
-### 원본을 보며 검수하는 영수증 파싱
+| 항목 | 준비 사항 |
+| --- | --- |
+| 운영체제·터미널 | Windows, PowerShell |
+| 프런트엔드 | Node.js 24.x, npm |
+| 백엔드 | Python 3.13.x, 프로젝트용 가상환경 `backend/.venv` |
+| 데이터베이스 | PostgreSQL 18.x 서버 실행, DB 생성 권한이 있는 계정 |
+| 실제 OCR 호출 | 본인의 CLOVA OCR 호출 URL·Secret, 외부 HTTPS 연결 |
 
-- 토큰 좌표로 기본 정보·항목별 진료비·금액/결제·진료/검사 일정 영역을 해석합니다.
-- SVG 다각형으로 인식 영역을 표시하고 선택한 텍스트·신뢰도를 확인합니다.
-- 금액·날짜·시간과 원본 필드 인덱스를 연결하고 확정하지 못한 후보·경고를 보존합니다.
-- 파서는 **특정 서울대 영수증 배치용 초기 규칙**입니다. 모든 병원 양식 지원이나 추출 정확도를 보장하지 않습니다.
-
-### 확인된 일정과 환자별 문서
-
-- OCR 직후 원본 이미지와 추출 결과를 미검수 문서로 저장합니다. 사용자가 확인하면 문서 갱신과 확정 일정 저장을 같은 DB 트랜잭션으로 처리합니다.
-- 문서 삭제 시 관련 기록도 관리합니다. PostgreSQL 저장 코드를 연결했습니다. 이 컴퓨터에서는 DB 설정·초기화 및 통합 테스트를 완료했습니다. 다른 환경에서는 별도 설정과 초기화가 필요합니다.
-- OCR 원본 JSON은 `backend/ocr_results/`에 디버그 저장될 수 있으며 저장 실패 상태도 응답합니다. 실제 의료 자료는 저장소에 올리지 않습니다.
-
-### 보험 청구용 파일 준비
-
-- 영수증을 선택하고 날짜 순으로 하나의 PDF로 합치거나 개별 PDF를 ZIP으로 받습니다.
-- 파일 생성 후 환자별 청구용 파일 목록에 PDF·ZIP과 포함된 영수증을 저장합니다. 목록에서 구성과 파일을 다시 확인할 수 있습니다.
-- 사용 완료를 누르면 완료 시각을 저장합니다. 완료 후에도 파일을 다시 내려받을 수 있습니다.
-- 보험사 제출은 사용자가 별도로 진행합니다.
-
-## PostgreSQL 저장 설정
-
-기존 OCR 설정과 별도로 DB 연결 정보와 초기화가 필요합니다. [테이블 설계·DB 설정·API·테스트](docs/architecture/postgresql-schema-and-api.md)를 참고하세요.
-실제 DB 비밀번호와 의료 자료는 Git에 올리지 않습니다. 현재 로그인·사용자별 접근 권한은 미구현이므로 로컬 시연 범위입니다.
-
-## 실행 방법
-
-다른 PC의 전체 설치와 기존 DB 기록 이동은 [학교 PC 실행 안내](docs/getting-started/run-on-school-pc.md)를 참고하세요. Git clone은 실제 기록이나 `.env`를 복사하지 않습니다. PostgreSQL 18.x와 Node.js 24.x, Python 3.13.x를 먼저 준비합니다. DBeaver는 선택 사항입니다.
-
-### 최초 준비
-
-프로젝트 루트의 PowerShell에서 실행합니다. `.env` 복사는 처음 한 번만 하며 기존 파일을 덮어쓰지 않습니다.
+### 1. 저장소 복제 및 의존성 설치
 
 ```powershell
+git clone https://github.com/rbgus4560/hospital-record-management-service.git
+cd hospital-record-management-service
+
 npm.cmd --prefix frontend ci
 py -3.13 -m venv backend\.venv
 .\backend\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
-Copy-Item backend\.env.example backend\.env
 ```
 
-`backend/.env`에서 CLOVA OCR URL·Secret과 **현재 PC의** DB 비밀번호를 입력한 뒤 초기화합니다. Secret을 프런트나 Git에 넣지 않습니다. PostgreSQL 서비스 실행과 DB 생성 권한이 필요합니다.
+`py` 명령이 없다면 Python 3.13의 실행 파일로 `-m venv backend\.venv`를 실행합니다.
+
+### 2. 환경변수 설정과 DB 초기화
+
+```powershell
+if (-not (Test-Path backend\.env)) {
+    Copy-Item backend\.env.example backend\.env
+}
+```
+
+[설정 예시](backend/.env.example)를 참고해 `backend/.env`를 편집합니다.
+
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`를 현재 PC의 PostgreSQL 설정에 맞춥니다.
+- 실제 영수증 OCR을 실행하려면 `CLOVA_OCR_URL`과 `CLOVA_OCR_SECRET`을 입력합니다.
+- 프런트엔드는 기본 API 주소 `http://127.0.0.1:8000`을 사용합니다. 주소를 바꾸는 경우에만 `frontend/.env.local`의 `VITE_API_BASE_URL`을 설정합니다. 비밀키와 DB 비밀번호는 Git에서 제외된 백엔드 `.env`에 둡니다.
+
+PostgreSQL 서비스가 실행 중인 상태에서 프로젝트 루트에서 초기화합니다.
 
 ```powershell
 .\backend\.venv\Scripts\python.exe backend\init_db.py
 ```
 
-### 백엔드
+### 3. 백엔드와 프런트엔드 실행
+
+백엔드용 터미널에서 실행합니다.
 
 ```powershell
 cd backend
 .\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
-API 문서는 `http://127.0.0.1:8000/docs`입니다. 루트 `/`의 404는 정상입니다. 실제 OCR 호출에는 외부 인터넷과 유효한 CLOVA 설정이 필요합니다.
-
-### 프런트엔드
-
-다른 터미널에서 프로젝트 루트 기준으로 실행합니다.
+별도 터미널을 열고 프로젝트 루트에서 프런트엔드를 실행합니다.
 
 ```powershell
 npm.cmd --prefix frontend run dev -- --host 127.0.0.1 --port 5173 --strictPort
 ```
 
-화면은 `http://127.0.0.1:5173`입니다. API 기본 주소는 `http://127.0.0.1:8000`이며 `VITE_API_BASE_URL`로 변경할 수 있습니다. 현재 CORS는 로컬 5173/5174를 허용합니다. `npm.cmd`를 사용하면 PowerShell의 `npm.ps1` 실행 정책 오류를 피할 수 있습니다.
+| 확인 항목 | 주소 |
+| --- | --- |
+| 웹 화면 | [http://127.0.0.1:5173/](http://127.0.0.1:5173/) |
+| FastAPI 문서 | [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) |
+| 기록 조회 | `GET http://127.0.0.1:8000/api/state` → HTTP 200 |
 
-## 검증 결과
+기록 조회가 HTTP 503이면 PostgreSQL 서비스, `backend/.env`의 DB 설정, 초기화 여부를 확인합니다. 설정을 바꾼 뒤에는 백엔드를 재시작합니다. 현재 실행 안내는 로컬 시연 기준입니다. [학교 PC 설치·실행 및 DB 이전 안내](docs/getting-started/run-on-school-pc.md)
 
-| 항목 | 확인 범위 |
-|---|---|
-| 프런트 | 전체 ESLint·Prettier 검사·프로덕션 빌드 통과 |
-| Python | Ruff 포맷 검사 및 실제 PostgreSQL 테스트 3개 통과 |
-| DB 통합 테스트 | CRUD·다른 클라이언트 재조회·환자 삭제 보호·버전 충돌·문서/일정 롤백 |
-| 사용자 실행 | 업로드·실제 OCR·일정 반영·수정 및 저장된 기록 확인 |
-| 남은 검증 | 최신 UI·PDF/ZIP 전체 시연, 다른 양식의 OCR 평가, 학교 PC 실제 실행 |
-| 기존 경고 | 500kB 초과 번들 경고, TestClient의 httpx 사용 중단 예정 안내 |
+## 핵심 구현
 
-자동 테스트는 자체 임시 스키마의 합성 데이터만 사용합니다. 테스트 3개는 OCR 평가 표본 수가 아닙니다. 실제 의료 자료나 비밀 설정은 저장소에 올리지 않습니다. 자세한 날짜별 결과는 [검증 기록](docs/development/test-and-validation-log.md)에 보존합니다.
+### OCR 좌표로 예약일과 시간 찾기
 
-## 코드 정리와 검사
+영수증에 날짜가 여러 개 있으므로, 파서는 **날짜 형식과 영수증 안의 위치**를 함께 사용합니다. 서울대병원 영수증의 특정 배치를 기준으로 다음 순서로 처리합니다.
 
-파일별 역할은 [코드 안내](docs/development/source-code-guide.md)를 참고하세요. JS/JSX는 공백 2칸(Prettier), Python은 공백 4칸(Ruff)으로 정리합니다. 프런트는 `npm.cmd --prefix frontend run format:check`, `npm.cmd --prefix frontend run lint`, `npm.cmd --prefix frontend run build`로 확인합니다.
+1. **이미지 검증과 OCR 호출**
 
-## 상세 문서
+   FastAPI가 JPG·PNG 형식과 요청 크기를 확인합니다. CLOVA OCR 응답에서 인식 텍스트, 좌표, 신뢰도를 가져옵니다.
+2. **진료·검사 영역 구분**
 
-- [학교 PC 설치·실행과 DB 기록 이동](docs/getting-started/run-on-school-pc.md)
+   좌표에서 각 글자 영역의 위치를 계산하고, `진료일`과 `검사일` 제목 사이의 중점을 기준으로 두 열을 나눕니다.
+3. **일정 후보 추출**
 
-- [전체 폴더 구조·파일별 존재 이유와 역할](docs/getting-started/project-folder-map.md)
+   각 제목 아래에서 날짜를 찾고, 같은 열의 다음 날짜가 나오기 전까지 관련 텍스트를 묶어 시간과 세부 정보를 추출합니다. 후보에 원본 필드 인덱스를 남겨 추출 근거를 확인할 수 있게 합니다.
+4. **원본 검수와 확정 일정 저장**
 
-- [PostgreSQL 테이블·저장 API](docs/architecture/postgresql-schema-and-api.md)
-- [프로젝트 분석·코드 근거](docs/getting-started/project-overview.md)
-- [개발 과정](docs/development/development-timeline.md)
-- [설계 결정](docs/architecture/design-decisions.md)
-- [트러블슈팅·제한 기록](docs/development/troubleshooting-log.md)
-- [검증 기록](docs/development/test-and-validation-log.md)
-- [기존 안내 보관](docs/archive/original-vite-readme.md)
+   검수 화면에서 원본 이미지 위에 인식 영역을 표시합니다. 사용자가 값을 확인하거나 수정해 확정하면, 문서 갱신과 환자별 일정 반영을 같은 DB 트랜잭션으로 처리합니다. 캘린더에서 저장된 일정을 다시 조회할 수 있습니다.
 
-## 문제 해결 경험·배운 점
+[OCR 호출](backend/ocr/clova_ocr_api.py) · [일정 파서](backend/ocr/snuh_receipt_parser.py#L16) · [OCR 원본 뷰어](frontend/src/screens/hospital-records/OcrImageViewer.jsx) · [기록 저장 API](backend/patient_document_records_api.py)
 
-### OCR 텍스트를 원본 위치와 함께 해석
+## 검증 및 관련 문서
 
-날짜·금액을 단순 문자열로만 추출하면 서로 다른 영역의 값이 섞일 수 있습니다. 현재 코드는 제목 위치·토큰 좌표·행 그룹과 원본 필드 인덱스를 활용하며, 결정하지 못한 항목은 경고와 함께 남깁니다.
+- **로컬 실행** — Windows에서 새로 복제한 뒤 프런트엔드와 API 문서에 접속했고, PostgreSQL 초기화 후 기록 조회 HTTP 200을 확인했습니다.
+- **DB 통합 테스트** — 검증 기록에 실제 PostgreSQL의 임시 스키마에서 CRUD, 재조회, 오래된 수정 요청 거부, 문서·일정 롤백을 포함한 테스트 3건의 통과가 남아 있습니다.
+- **시연 범위** — 기존 검증 범위는 저장소 문서에 기록했습니다. 최신 화면에서 영수증 업로드부터 일정 반영까지의 전체 시연은 이번 로컬 실행 점검 범위 밖입니다.
 
-**배운 점:** OCR의 텍스트와 화면 위치를 함께 다뤄야 구조화 결과를 검수할 수 있습니다. 특정 영수증 배치 규칙을 일반적인 병원 문서 인식 성능으로 확대하면 안 됩니다.
-
-### 추출 결과와 사용자 확정을 분리
-
-파서 결과에는 검수 필요 상태를 남기고, React는 사용자가 확인한 일정만 반영합니다. 이미 받은 OCR 결과의 재분석은 외부 API를 다시 호출하지 않습니다.
-
-**배운 점:** 자동 추출을 최종 사실로 취급하지 않고 원본·후보·확정 상태를 구분하는 것이 중요합니다. 평가 스크립트와 빈 정답표 양식으로 문자 인식과 일정 추출을 각각 확인할 수 있습니다.
-
-### 실제 구현과 소개 문서의 차이 정리
-
-기존 GitHub 소개는 Spring Boot·PostgreSQL·LLM 요약을 제안했지만, 초기 구현은 FastAPI·규칙 파서·React 임시 상태였습니다. 이후 PostgreSQL 저장·초기 조회와 통합 테스트를 추가했습니다.
-
-**배운 점:** 계획한 기술과 구현한 기술을 구분하고 현재 저장 범위를 정확히 설명해야 합니다. 현재는 PostgreSQL 저장을 구현했지만, LLM 요약·로그인·공개 배포는 미구현입니다.
-
-## OCR 평가
-
-[영수증 OCR 평가 도구](ocr-evaluation/README.md)에서 영수증 하단 일정의 문자 오류율과 일정 추출 일치율을 계산할 수 있습니다.
+[검증 기록](docs/development/test-and-validation-log.md) · [트러블슈팅](docs/development/troubleshooting-log.md) · [설계 결정](docs/architecture/design-decisions.md) · [전체 문서](docs/README.md)
