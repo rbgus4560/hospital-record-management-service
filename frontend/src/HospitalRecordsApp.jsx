@@ -16,7 +16,7 @@ import './shared-styles/managementForms.css'
 const menus = [
   { id: 'home', name: '홈' },
   { id: 'patients', name: '환자 관리' },
-  { id: 'schedule', name: '일정 관리' },
+  { id: 'schedule', name: '진료·검사' },
   { id: 'records', name: '병원 기록' },
   { id: 'claims', name: '보험 청구 준비' },
 ]
@@ -446,6 +446,21 @@ export default function HospitalRecordsApp() {
     })
   }
 
+  function setAppointmentCompleted(appointment, completed) {
+    void mutate(async () => {
+      const stored = await api(`/api/appointments/${appointment.id}/completion`, {
+        method: 'PUT',
+        body: { completed },
+      })
+      setAppointments((previous) =>
+        previous.map((item) => (item.id === appointment.id ? stored.appointment : item)),
+      )
+      setDocuments((previous) =>
+        previous.map((item) => (item.id === stored.document.id ? stored.document : item)),
+      )
+    }, setNotice)
+  }
+
   const modalOpen = Boolean(patientForm || documentForm || review)
 
   return (
@@ -543,6 +558,10 @@ export default function HospitalRecordsApp() {
 
             {activeMenu === 'schedule' && (
               <AppointmentManagementPage
+                key={patientId}
+                onCompletedChange={setAppointmentCompleted}
+                saving={dbSaving}
+                notice={notice}
                 patientAppointments={patientAppointments}
                 documents={documents}
                 openPreview={openPreview}

@@ -182,3 +182,8 @@ npm.cmd --prefix frontend run dev -- --host 127.0.0.1 --port 5173 --strictPort
 - **시연 범위** — 기존 검증 범위는 저장소 문서에 기록했습니다. 최신 화면에서 영수증 업로드부터 일정 반영까지의 전체 시연은 이번 로컬 실행 점검 범위 밖입니다.
 
 [검증 기록](docs/development/test-and-validation-log.md) · [트러블슈팅](docs/development/troubleshooting-log.md) · [설계 결정](docs/architecture/design-decisions.md) · [전체 문서](docs/README.md)
+
+### 진료·검사 완료 처리
+진료·검사 화면은 기본으로 예정 항목만 표시합니다. 완료 버튼은 상태를 DB에 저장하며 완료 필터에서 이력 조회와 예정 복원이 가능합니다. 검색·날짜·종류 필터를 함께 적용합니다.
+
+다른 PC에서 최신 코드를 받은 뒤 기존 설정을 유지하고 backend/init_db.py를 실행한 후 백엔드를 재시작합니다. 기존 기록을 보존하며 완료 컬럼을 추가하고 기존 일정은 예정으로 유지합니다. Git에는 코드가 반영되며 실제 기록과 완료 상태는 각 PC의 DB에 저장됩니다.

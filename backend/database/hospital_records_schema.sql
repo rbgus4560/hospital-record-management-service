@@ -33,6 +33,8 @@ CREATE TABLE IF NOT EXISTS appointments (
  CHECK ((appointment_type = '진료' AND length(trim(department)) > 0)
  OR (appointment_type = '검사' AND length(trim(examination)) > 0))
 );
+-- 기존 DB의 일정은 미완료로 유지하며 재실행해도 상태를 보존한다.
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS completed BOOLEAN NOT NULL DEFAULT false;
 CREATE INDEX IF NOT EXISTS appointments_document_idx ON appointments(document_id);
 CREATE INDEX IF NOT EXISTS appointments_date_idx ON appointments(appointment_date);
 

@@ -27,7 +27,9 @@ class ConfigurationTests(unittest.TestCase):
             client.post("/api/patients", json={"name": "  "}).status_code, 422
         )
         with self.assertRaises(ValueError):
-            patient_document_records_api.AppointmentInput(type="검사", date="2026-10-25", examination="")
+            patient_document_records_api.AppointmentInput(
+                type="검사", date="2026-10-25", examination=""
+            )
 
 
 @unittest.skipUnless(
@@ -54,9 +56,11 @@ class DatabaseTests(unittest.TestCase):
         self.patcher.start()
         with isolated_connection() as conn:
             conn.execute(
-                (Path(__file__).parents[1] / "database" / "hospital_records_schema.sql").read_text(
-                    encoding="utf-8-sig"
-                )
+                (
+                    Path(__file__).parents[1]
+                    / "database"
+                    / "hospital_records_schema.sql"
+                ).read_text(encoding="utf-8-sig")
             )
         self.client = TestClient(main.app)
 
@@ -83,6 +87,97 @@ class DatabaseTests(unittest.TestCase):
             ocrRawResponse={"images": []},
             parsedReceipt={},
         )
+
+    def test_completion_persistence_resave_and_reset(self):
+        c = self.client
+        patient = c.post("/api/patients", json={"name": "완료 테스트"}).json()
+        document = c.post(
+            "/api/documents", json={"document": self.document(patient["id"])}
+        ).json()
+        document.update(date="2026-11-23", confirmed=True)
+        appointment = dict(
+            id=str(uuid4()),
+            type="검사",
+            date="2026-11-24",
+            time="10:00",
+            examination="합성 검사",
+        )
+        result = c.put(
+            "/api/documents/" + document["id"],
+            json={"document": document, "appointments": [appointment]},
+        )
+        self.assertEqual(result.status_code, 200, result.text)
+        saved = result.json()["document"]
+        path = "/api/appointments/" + appointment["id"] + "/completion"
+        self.assertFalse(result.json()["appointments"][0]["completed"])
+        completed = c.put(path, json={"completed": True})
+        self.assertEqual(completed.status_code, 200, completed.text)
+        self.assertTrue(
+            TestClient(main.app)
+            .get("/api/state")
+            .json()["appointments"][0]["completed"]
+        )
+        # 재시도는 같은 상태를 유지하고 버전을 불필요하게 올리지 않는다.
+        retried = c.put(path, json={"completed": True})
+        self.assertEqual(
+            retried.json()["document"]["version"],
+            completed.json()["document"]["version"],
+        )
+        # 오래된 검수 화면은 완료 처리 이후 기록을 덮어쓸 수 없다.
+        stale = c.put(
+            "/api/documents/" + document["id"],
+            json={"document": saved, "appointments": [appointment]},
+        )
+        self.assertEqual(stale.status_code, 409, stale.text)
+        saved = completed.json()["document"]
+        current = c.put(
+            "/api/documents/" + saved["id"],
+            json={"document": saved, "appointments": [appointment]},
+        )
+        self.assertEqual(current.status_code, 200, current.text)
+        self.assertTrue(current.json()["appointments"][0]["completed"])
+        # 같은 원본을 다시 분석해 UUID가 바뀌어도 유일하게 같은 일정은 완료를 유지한다.
+        appointment["id"] = str(uuid4())
+        current = c.put(
+            "/api/documents/" + saved["id"],
+            json={
+                "document": current.json()["document"],
+                "appointments": [appointment],
+            },
+        )
+        self.assertEqual(current.status_code, 200, current.text)
+        self.assertTrue(current.json()["appointments"][0]["completed"])
+        reset = c.put(
+            "/api/appointments/" + appointment["id"] + "/completion",
+            json={"completed": False},
+        )
+        self.assertEqual(reset.status_code, 200, reset.text)
+        self.assertFalse(
+            TestClient(main.app)
+            .get("/api/state")
+            .json()["appointments"][0]["completed"]
+        )
+        self.assertEqual(
+            c.put(
+                "/api/appointments/" + str(uuid4()) + "/completion",
+                json={"completed": True},
+            ).status_code,
+            404,
+        )
+        # 스키마 초기화를 반복해도 저장한 상태가 유지된다.
+        c.put(
+            "/api/appointments/" + appointment["id"] + "/completion",
+            json={"completed": True},
+        )
+        with self.factory() as conn:
+            conn.execute(
+                (
+                    Path(__file__).parents[1]
+                    / "database"
+                    / "hospital_records_schema.sql"
+                ).read_text(encoding="utf-8-sig")
+            )
+        self.assertTrue(c.get("/api/state").json()["appointments"][0]["completed"])
 
     def test_crud_persistence_conflict_and_transaction_rollback(self):
         c = self.client

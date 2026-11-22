@@ -46,6 +46,10 @@ class AppointmentInput(BaseModel):
         return self
 
 
+class AppointmentCompletionInput(BaseModel):
+    completed: bool
+
+
 class DocumentInput(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
     id: UUID
@@ -134,6 +138,7 @@ def appointment_views(conn):
             title=r["examination"]
             if r["appointment_type"] == "검사"
             else r["department"],
+            completed=r["completed"],
             needs_review=False,
         )
         for r in rows
@@ -262,14 +267,43 @@ def update_document(document_id: UUID, body: DocumentSave):
             (d.date, d.hospital.strip(), Jsonb(d.parsed), d.confirmed, document_id),
         ).fetchone()
         if body.appointments is not None:
+            # 검수 화면이 다시 저장되어도 기존 일정의 완료 여부를 유지한다.
+            previous = conn.execute(
+                "SELECT * FROM appointments WHERE document_id=%s", (document_id,)
+            ).fetchall()
+            previous_by_id = {a["id"]: a["completed"] for a in previous}
+            # OCR 재분석으로 UUID가 바뀌었을 때는 유일하게 일치하는 일정만 승계한다.
+            previous_by_details = {}
+            for a in previous:
+                key = (
+                    a["appointment_type"],
+                    a["appointment_date"],
+                    a["appointment_time"],
+                    a["department"],
+                    a["examination"],
+                )
+                previous_by_details.setdefault(key, []).append(a["completed"])
             conn.execute(
                 "DELETE FROM appointments WHERE document_id=%s", (document_id,)
             )
             for a in body.appointments:
+                matches = previous_by_details.get(
+                    (
+                        a.type,
+                        a.date,
+                        a.time,
+                        a.department.strip(),
+                        a.examination.strip(),
+                    ),
+                    [],
+                )
+                completed = previous_by_id.get(
+                    a.id, matches[0] if len(matches) == 1 else False
+                )
                 conn.execute(
                     """INSERT INTO appointments
-                    (id,document_id,appointment_type,appointment_date,appointment_time,department,doctor,examination,location)
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+                    (id,document_id,appointment_type,appointment_date,appointment_time,department,doctor,examination,location,completed)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                     (
                         a.id,
                         document_id,
@@ -280,6 +314,7 @@ def update_document(document_id: UUID, body: DocumentSave):
                         a.doctor,
                         a.examination.strip(),
                         a.location,
+                        completed,
                     ),
                 )
         return dict(
@@ -301,3 +336,31 @@ def delete_document(document_id: UUID):
         ).fetchone():
             raise HTTPException(404, "문서를 찾을 수 없습니다.")
     return Response(status_code=204)
+
+
+@router.put("/appointments/{appointment_id}/completion")
+def set_appointment_completion(appointment_id: UUID, body: AppointmentCompletionInput):
+    """문서 편집과 같은 잠금을 사용해 완료 상태가 오래된 검수 저장에 덮이지 않게 한다."""
+    with transaction() as conn:
+        document = conn.execute(
+            """SELECT d.* FROM documents d JOIN appointments a ON a.document_id=d.id
+               WHERE a.id=%s FOR UPDATE OF d""",
+            (appointment_id,),
+        ).fetchone()
+        if document is None:
+            raise HTTPException(404, "진료·검사 항목을 찾을 수 없습니다.")
+        changed = conn.execute(
+            """UPDATE appointments SET completed=%s
+               WHERE id=%s AND completed IS DISTINCT FROM %s RETURNING id""",
+            (body.completed, appointment_id, body.completed),
+        ).fetchone()
+        if changed:
+            document = conn.execute(
+                """UPDATE documents SET version=version+1,updated_at=now()
+                   WHERE id=%s RETURNING *""",
+                (document["id"],),
+            ).fetchone()
+        appointment = next(
+            a for a in appointment_views(conn) if a["id"] == str(appointment_id)
+        )
+        return dict(document=document_view(document), appointment=appointment)
