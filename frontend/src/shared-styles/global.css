@@ -46,3 +46,16 @@ h3,
 p {
   margin: 0;
 }
+
+/* 시각적 설명을 줄여도 보조 기술에는 필터 이름을 제공한다. */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

@@ -320,9 +320,17 @@ h3 {
   overflow-y: auto;
 }
 
-/* 기준 화면보다 작아지면 압축 대신 브라우저 스크롤로 탐색한다. */
-.app-layout {
+/* 기준 화면보다 작아지면 양쪽 외부 여백까지 브라우저 스크롤로 탐색한다. */
+#root {
   min-width: 1760px;
+}
+
+.app-layout {
+  /* 사이드바를 포함한 전체 앱의 양옆에 동일한 여백을 둔다. */
+  --page-width-reduction: 210px;
+  width: calc(100% - var(--page-width-reduction));
+  min-width: 1550px;
+  margin-inline: calc(var(--page-width-reduction) / 2);
   height: 100dvh;
   min-height: 945px;
 }

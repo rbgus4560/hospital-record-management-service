@@ -30,7 +30,8 @@ export function DocumentList({ items, onPreview, selectedId, onSelect }) {
   ))
 }
 
-export function AppointmentList({ items, onOpen }) {
+/** 홈에서는 일정 정보만 표시한다. */
+export function AppointmentList({ items }) {
   if (!items.length) return <p className="empty-message">등록된 일정이 없습니다.</p>
   return items.map((item) => (
     <article className="schedule-item" key={item.id}>
@@ -38,18 +39,21 @@ export function AppointmentList({ items, onOpen }) {
         <span>{Number(item.date.slice(5, 7))}월</span>
         <strong>{Number(item.date.slice(8, 10))}</strong>
       </div>
+      <div className="schedule-time">
+        <span>{item.date.slice(0, 4)}년</span>
+        <strong>{item.time || '시간 미기재'}</strong>
+      </div>
       <div className="item-details">
         <span className={`type-label ${item.type === '검사' ? 'exam' : 'visit'}`}>{item.type}</span>
         <h3>{item.title}</h3>
         <p>
-          {item.time || '시간 미기재'} · {item.hospital}
+          {item.type === '검사'
+            ? item.location || '장소 미기재'
+            : item.doctor
+              ? `담당의 ${item.doctor}`
+              : '담당의 미기재'}
         </p>
-        <p>
-          {item.type === '검사' ? item.location || '장소 미기재' : item.doctor || '의사 미기재'}
-        </p>
-        <button className="text-button" onClick={() => onOpen(item)}>
-          원본·일정 수정
-        </button>
+        {item.hospital && <p>{item.hospital}</p>}
       </div>
     </article>
   ))

@@ -1,7 +1,10 @@
 /* 왼쪽 캘린더 / 오른쪽 일정과 문서 각각 절반 */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.75fr) minmax(330px, 1fr);
+  /* 줄이기 전 가용 폭의 7/11을 유지해 캘린더 크기는 그대로 둔다. */
+  grid-template-columns:
+    minmax(0, calc((100% + var(--page-width-reduction) - 18px) * 7 / 11))
+    minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-areas:
     'calendar schedule'
@@ -183,4 +186,33 @@
 }
 .calendar-event {
   overflow: hidden;
+}
+
+.schedule-panel .schedule-item {
+  display: grid;
+  grid-template-columns: 55px 92px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+}
+.schedule-time {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.schedule-time span {
+  color: #718096;
+  font-size: 12px;
+}
+.schedule-time strong {
+  font-size: 15px;
+}
+.schedule-panel .item-details {
+  min-width: 0;
+}
+.schedule-panel .item-details h3 {
+  line-height: 1.4;
+}
+.schedule-panel .item-details p {
+  margin-top: 5px;
 }

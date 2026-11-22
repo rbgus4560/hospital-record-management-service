@@ -45,7 +45,7 @@
 
 .patient-table th,
 .patient-table td {
-  text-align: center;
+  text-align: left;
   vertical-align: middle;
 }
 .patient-table th:last-child,
@@ -72,4 +72,8 @@
 }
 .patient-actions .danger-button:hover {
   background: #fff3f3;
+}
+
+.patient-table th:last-child {
+  text-align: center;
 }

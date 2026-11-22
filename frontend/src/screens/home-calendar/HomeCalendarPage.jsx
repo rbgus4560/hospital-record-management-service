@@ -16,7 +16,6 @@ export default function HomeCalendarPage({
   selectedPatient,
   patientAppointments,
   patientDocuments,
-  documents,
   openPreview,
   changeMenu,
 }) {
@@ -27,7 +26,8 @@ export default function HomeCalendarPage({
   const weekCount = Math.ceil((firstWeekday + daysInMonth) / 7)
   const monthPrefix = `${year}-${String(monthIndex + 1).padStart(2, '0')}`
 
-  const shownAppointments = patientAppointments.filter(
+  const pendingAppointments = patientAppointments.filter((item) => !item.completed)
+  const shownAppointments = pendingAppointments.filter(
     (item) => item.date.startsWith(monthPrefix) && (!selectedDate || item.date === selectedDate),
   )
 
@@ -109,7 +109,7 @@ export default function HomeCalendarPage({
             }
 
             const key = dateKey(year, monthIndex, day)
-            const items = patientAppointments.filter((item) => item.date === key)
+            const items = pendingAppointments.filter((item) => item.date === key)
 
             return (
               <button
@@ -144,7 +144,7 @@ export default function HomeCalendarPage({
         <div className="panel-header">
           <div>
             <h2>{selectedDate ? '선택한 날짜의 일정' : '이번 달 일정'}</h2>
-            <p className="panel-caption">{shownAppointments.length}건</p>
+            <p className="panel-caption">예정 {shownAppointments.length}건</p>
           </div>
           {selectedDate && (
             <button className="text-button" onClick={() => setSelectedDate('')}>
@@ -153,10 +153,7 @@ export default function HomeCalendarPage({
           )}
         </div>
         <div className="panel-body">
-          <AppointmentList
-            items={shownAppointments}
-            onOpen={(item) => openPreview(documents.find((d) => d.id === item.documentId))}
-          />
+          <AppointmentList items={shownAppointments} />
         </div>
       </section>
 

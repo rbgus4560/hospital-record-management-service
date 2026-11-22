@@ -540,7 +540,6 @@ export default function HospitalRecordsApp() {
                 selectedPatient={selectedPatient}
                 patientAppointments={patientAppointments}
                 patientDocuments={patientDocuments}
-                documents={documents}
                 openPreview={openPreview}
                 changeMenu={changeMenu}
               />
@@ -570,6 +569,13 @@ export default function HospitalRecordsApp() {
 
             {activeMenu === 'records' && (
               <HospitalRecordsPage
+                key={patientId}
+                patients={patients}
+                patientId={patientId}
+                onPatientChange={(id) => {
+                  setPatientId(id)
+                  setSelectedDocumentId('')
+                }}
                 notice={notice}
                 selectedPatient={selectedPatient}
                 patientDocuments={patientDocuments}

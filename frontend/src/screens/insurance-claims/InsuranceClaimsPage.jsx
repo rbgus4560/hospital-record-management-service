@@ -140,7 +140,7 @@ export default function InsuranceClaimsPage({
   }
 
   return (
-    <div className="claims-shell">
+    <div className="panel page-panel claims-shell">
       <div className="claims-content">
         <header className="claims-heading">
           <div>

@@ -58,7 +58,7 @@ export default function AppointmentManagementPage({
         <h1>진료·검사</h1>
         <div className="appointment-filters">
           <label className="appointment-search">
-            <span>검색</span>
+            <span className="visually-hidden">검색</span>
             <input
               type="search"
               value={query}
@@ -67,7 +67,7 @@ export default function AppointmentManagementPage({
             />
           </label>
           <fieldset className="appointment-date-filter">
-            <legend>날짜 범위</legend>
+            <legend className="visually-hidden">날짜 범위</legend>
             <input
               type="date"
               aria-label="시작일"
@@ -95,7 +95,7 @@ export default function AppointmentManagementPage({
             ))}
           </div>
           <label className="appointment-status-filter">
-            <span>상태</span>
+            <span className="visually-hidden">상태</span>
             <select
               aria-label="진료·검사 상태"
               value={status}
