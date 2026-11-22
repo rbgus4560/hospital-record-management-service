@@ -489,7 +489,7 @@ export default function HospitalRecordsApp() {
           <aside className="sidebar">
             <div className="brand">
               <NavigationIcon name="hospital" className="brand-icon" />
-              병원 기록
+              MediLog
             </div>
 
             <div className="patient-selector">
