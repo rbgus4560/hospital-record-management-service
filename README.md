@@ -5,7 +5,7 @@
 <p align="center"><strong>개인 웹 프로젝트</strong></p>
 
 <p align="center">
-  <code>React + Vite</code> · <code>FastAPI</code> · <code>CLOVA OCR</code> · <code>PostgreSQL</code>
+  <code>React + Vite</code> · <code>FastAPI</code> · <code>PaddleOCR</code> · <code>PostgreSQL</code>
 </p>
 
 <p align="center">
@@ -39,7 +39,7 @@
 | --- | --- | --- |
 | 프런트엔드 | React, Vite | 환자 관리, OCR 검수, 캘린더, 보험 청구 화면 |
 | 백엔드 | Python, FastAPI, Uvicorn | 이미지 입력 검증, OCR 호출·재분석, 기록·청구 API |
-| OCR·파싱 | CLOVA OCR V2, Python | OCR 응답의 글자와 좌표를 받아 영수증 항목과 일정 후보 추출 |
+| OCR·파싱 | PaddleOCR PP-OCRv5, Python | OCR 응답의 글자와 좌표를 받아 영수증 항목과 일정 후보 추출 |
 | 데이터베이스 | PostgreSQL, Psycopg | 환자, 원본 이미지와 문서, 확정 일정, 청구용 파일 저장 |
 | 파일 생성 | jsPDF, JSZip | 영수증을 PDF로 변환하고 개별 PDF를 ZIP으로 묶기 |
 
@@ -49,7 +49,7 @@
 flowchart LR
     React["React · 업로드, 검수, 캘린더"]
     API["FastAPI · OCR, 기록, 청구 API"]
-    OCR["CLOVA OCR"]
+    OCR["PaddleOCR"]
     Parser["Python · 영수증 파서"]
     DB[("PostgreSQL")]
 
@@ -75,7 +75,7 @@ flowchart LR
 │   ├── main.py                          # OCR·기록·청구 라우터 연결
 │   ├── init_db.py                       # DB와 테이블 준비
 │   ├── ocr/
-│   │   ├── clova_ocr_api.py               # CLOVA 호출과 OCR 결과 재분석 API
+│   │   ├── ocr_api.py               # OCR 호출과 결과 재분석 API
 │   │   └── snuh_receipt_parser.py         # 좌표 기반 영수증 항목·일정 추출
 │   ├── database/                        # 연결 설정, 초기화 로직, 스키마 SQL
 │   ├── patient_document_records_api.py  # 환자·문서·일정 저장과 조회
@@ -94,9 +94,9 @@ flowchart LR
 | --- | --- |
 | 운영체제·터미널 | Windows, PowerShell |
 | 프런트엔드 | Node.js 24.x, npm |
-| 백엔드 | Python 3.13.x, 프로젝트용 가상환경 `backend/.venv` |
+| 백엔드 | Python 3.12.x, 프로젝트용 가상환경 `.venv` |
 | 데이터베이스 | PostgreSQL 18.x 서버 실행, DB 생성 권한이 있는 계정 |
-| 실제 OCR 호출 | 본인의 CLOVA OCR 호출 URL·Secret, 외부 HTTPS 연결 |
+| 실제 OCR 호출 | PaddleOCR 모델 다운로드를 위한 초기 외부 연결 |
 
 ### 1. 저장소 복제 및 의존성 설치
 
@@ -105,11 +105,11 @@ git clone https://github.com/rbgus4560/hospital-record-management-service.git
 cd hospital-record-management-service
 
 npm.cmd --prefix frontend ci
-py -3.13 -m venv backend\.venv
-.\backend\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r backend\requirements-paddle.txt
 ```
 
-`py` 명령이 없다면 Python 3.13의 실행 파일로 `-m venv backend\.venv`를 실행합니다.
+`py` 명령이 없다면 Python 3.12의 실행 파일로 `-m venv .venv`를 실행합니다.
 
 ### 2. 환경변수 설정과 DB 초기화
 
@@ -122,13 +122,13 @@ if (-not (Test-Path backend\.env)) {
 [설정 예시](backend/.env.example)를 참고해 `backend/.env`를 편집합니다.
 
 - `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`를 현재 PC의 PostgreSQL 설정에 맞춥니다.
-- 실제 영수증 OCR을 실행하려면 `CLOVA_OCR_URL`과 `CLOVA_OCR_SECRET`을 입력합니다.
+- 모델은 첫 OCR 요청에서 내려받고 이후 같은 서버 프로세스에서 재사용합니다. Windows에서는 모델을 `%LOCALAPPDATA%\HospitalRecordOCR`에 저장합니다. 경로에 한글이 있으면 `PADDLE_PDX_CACHE_HOME`에 쓰기 가능한 영문 경로를 지정합니다.
 - 프런트엔드는 기본 API 주소 `http://127.0.0.1:8000`을 사용합니다. 주소를 바꾸는 경우에만 `frontend/.env.local`의 `VITE_API_BASE_URL`을 설정합니다. 비밀키와 DB 비밀번호는 Git에서 제외된 백엔드 `.env`에 둡니다.
 
 PostgreSQL 서비스가 실행 중인 상태에서 프로젝트 루트에서 초기화합니다.
 
 ```powershell
-.\backend\.venv\Scripts\python.exe backend\init_db.py
+.\.venv\Scripts\python.exe backend\init_db.py
 ```
 
 ### 3. 백엔드와 프런트엔드 실행
@@ -137,7 +137,7 @@ PostgreSQL 서비스가 실행 중인 상태에서 프로젝트 루트에서 초
 
 ```powershell
 cd backend
-.\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
+..\.venv\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
 별도 터미널을 열고 프로젝트 루트에서 프런트엔드를 실행합니다.
@@ -162,7 +162,7 @@ npm.cmd --prefix frontend run dev -- --host 127.0.0.1 --port 5173 --strictPort
 
 1. **이미지 검증과 OCR 호출**
 
-   FastAPI가 JPG·PNG 형식과 요청 크기를 확인합니다. CLOVA OCR 응답에서 인식 텍스트, 좌표, 신뢰도를 가져옵니다.
+   FastAPI가 JPG·PNG 형식과 요청 크기를 확인합니다. PaddleOCR로 텍스트, 좌표, 신뢰도를 얻고 기존 API 형식으로 변환합니다. 원본 OCR 결과의 `inference_ms`는 모델 로딩과 요청 대기 시간을 제외한 추론 시간입니다.
 2. **진료·검사 영역 구분**
 
    좌표에서 각 글자 영역의 위치를 계산하고, `진료일`과 `검사일` 제목 사이의 중점을 기준으로 두 열을 나눕니다.
@@ -173,7 +173,7 @@ npm.cmd --prefix frontend run dev -- --host 127.0.0.1 --port 5173 --strictPort
 
    검수 화면에서 원본 이미지 위에 인식 영역을 표시합니다. 사용자가 값을 확인하거나 수정해 확정하면, 문서 갱신과 환자별 일정 반영을 같은 DB 트랜잭션으로 처리합니다. 캘린더에서 저장된 일정을 다시 조회할 수 있습니다.
 
-[OCR 호출](backend/ocr/clova_ocr_api.py) · [일정 파서](backend/ocr/snuh_receipt_parser.py#L16) · [OCR 원본 뷰어](frontend/src/screens/hospital-records/OcrImageViewer.jsx) · [기록 저장 API](backend/patient_document_records_api.py)
+[OCR 호출](backend/ocr/ocr_api.py) · [일정 파서](backend/ocr/snuh_receipt_parser.py#L16) · [OCR 원본 뷰어](frontend/src/screens/hospital-records/OcrImageViewer.jsx) · [기록 저장 API](backend/patient_document_records_api.py)
 
 ## 검증 및 관련 문서
 

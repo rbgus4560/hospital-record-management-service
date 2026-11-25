@@ -68,5 +68,11 @@ DB 통합 테스트는 DB_PASSWORD가 필요하며 테스트 전용 임시 스�
 
 - 홈 캘린더는 `frontend/src/screens/home-calendar/`, 환자 목록과 폼은 `screens/patient-management/`, 일정 화면은 `screens/appointment-management/`에 있다.
 - 병원 기록 목록, 문서 등록, OCR 검수는 `screens/hospital-records/`에 있다. 청구 목록과 PDF·ZIP 생성은 `screens/insurance-claims/`에 있다.
-- 백엔드 진입점인 `main.py`는 `patient_document_records_api.py`, `insurance_claim_files_api.py`, `ocr/clova_ocr_api.py`를 등록한다. 연결과 오류 처리는 `database/postgres_connection.py`의 공통 트랜잭션을 사용한다.
+- 백엔드 진입점인 `main.py`는 `patient_document_records_api.py`, `insurance_claim_files_api.py`, `ocr/ocr_api.py`를 등록한다. 연결과 오류 처리는 `database/postgres_connection.py`의 공통 트랜잭션을 사용한다.
 - React의 `HospitalRecordsApp.jsx`는 메뉴 전환, 선택 환자, DB 조회·저장, 모달 상태를 조율한다. 화면과 입력 폼은 각 기능 폴더에서 찾을 수 있다.
+
+## OCR 처리 흐름
+
+- `ocr/ocr_api.py`에서 업로드 형식과 크기를 검증하고, 새 OCR 요청과 저장 결과 재분석을 처리한다.
+- `ocr/paddle_ocr.py`에서 브라우저와 같은 사진 방향으로 이미지를 열고, 한국어 모델의 단어 좌표를 검수 화면과 파서가 사용하는 필드로 변환한다.
+- `ocr/snuh_receipt_parser.py`에서 제목을 기준으로 영역을 나눈다. 상단 정보와 금액은 표의 열에 맞춰 찾고, 일정은 날짜별로 묶어 같은 줄의 시간 조각을 읽는다. 후보마다 근거가 되는 OCR 필드 번호를 보존한다.

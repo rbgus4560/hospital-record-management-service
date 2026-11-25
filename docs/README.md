@@ -23,4 +23,3 @@
 ## 보관
 
 - [초기 Vite README](archive/original-vite-readme.md)
-- [이전 GitHub README](archive/previous-github-readme.md)

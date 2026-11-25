@@ -7,7 +7,7 @@
 - `src/App.jsx`: 환자·문서·일정 useState, JPG/PNG 업로드, OCR API, 검수·수정 및 확인된 일정 반영. DB 저장 성공 후 목록·일정을 갱신하며 초기 조회 실패 시 등록을 차단.
 - `src/OcrImageViewer.jsx`: 이미지 원본 비율에 OCR polygon을 표시하고 텍스트·신뢰도 선택.
 - `src/InsuranceClaims.jsx`: 영수증 선택·정렬, jsPDF의 이미지 PDF 및 JSZip의 개별 PDF 묶음.
-- `backend/main.py`: 이미지 형식·크기·시그니처 확인, CLOVA V2 호출, 원본 OCR JSON 디버그 저장, 결과 파싱 반환.
+- `backend/ocr/ocr_api.py`: 이미지 검증, PaddleOCR 호출, OCR JSON 저장, 영수증 파싱 결과 반환.
 - `backend/ocr/snuh_receipt_parser.py`: 기준 제목·상대 좌표·행 그룹으로 기본/진료비/결제/일정 후보 구성. 특정 서울대 영수증 배치 규칙이며 검수 필요 경고를 유지.
 
 ## 저장과 미구현 구분

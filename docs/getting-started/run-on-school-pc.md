@@ -8,9 +8,9 @@ Windows PowerShell 기준. **코드, 실행 환경, 비밀 설정, DB 기록은 
 |---|---|
 | Git | `git --version`으로 확인 |
 | Node.js | 24.x. 현재 점검 환경 24.22.1 / npm 11.19.1 |
-| Python | 3.13.x. 현재 점검 환경 3.13.12 |
+| Python | 3.12.x. 현재 점검 환경 3.12.12 |
 | PostgreSQL | 18.x 서버 설치·실행, 설치 비밀번호 보관 |
-| CLOVA OCR 설정 | 기존 OCR URL·Secret을 안전하게 별도 준비 |
+| PaddleOCR | 첫 실행에서 모델을 다운로드할 수 있는 연결 |
 | 인터넷 | 최초 의존성 설치와 실제 OCR 호출에 필요 |
 | DBeaver | 선택 사항. DB 확인 도구이며 앱 실행에는 필수 아님 |
 
@@ -20,10 +20,10 @@ Windows PowerShell 기준. **코드, 실행 환경, 비밀 설정, DB 기록은 
 git --version
 node --version
 npm.cmd --version
-py -3.13 --version
+py -3.12 --version
 ```
 
-Python이 설치되어 있는데 `py`만 없다면 `python --version`이 3.13.x인지 확인한 후 아래의 `py -3.13`을 `python`으로 바꾼다.
+Python이 설치되어 있는데 `py`만 없다면 `python --version`이 3.12.x인지 확인한 후 아래의 `py -3.12`을 `python`으로 바꾼다.
 
 ## 2. 코드와 의존성 설치
 
@@ -34,13 +34,13 @@ git clone https://github.com/rbgus4560/hospital-record-management-service.git
 cd hospital-record-management-service
 code .
 npm.cmd --prefix frontend ci
-py -3.13 -m venv backend\.venv
-.\backend\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
+py -3.12 -m venv backend\.venv
+.\backend\.venv\Scripts\python.exe -m pip install -r backend\requirements-paddle.txt
 ```
 
 - 이미 클론했다면 `git status`로 수정 사항을 먼저 확인하고, 수정 사항이 없을 때 `git pull --ff-only`로 갱신한다.
 - `npm.cmd`와 가상환경 Python 직접 호출로 `npm.ps1`·`Activate.ps1` 실행 정책 문제를 피한다. 보안 정책 변경은 불필요하다.
-- `npm ci`는 `package-lock.json`의 버전으로 설치한다. Python은 `requirements.txt`에 고정한 패키지를 설치한다.
+- `npm ci`는 `package-lock.json`의 버전으로 설치한다. Python은 `requirements-paddle.txt`에 고정한 패키지를 설치한다.
 
 ## 3. 학교 PC 환경 설정
 
@@ -53,8 +53,6 @@ Copy-Item backend\.env.example backend\.env
 `backend/.env`의 빈 값을 채운다. 실제 비밀값은 채팅이나 Git에 넣지 않는다.
 
 ```dotenv
-CLOVA_OCR_URL=""
-CLOVA_OCR_SECRET=""
 DB_HOST="127.0.0.1"
 DB_PORT="5432"
 DB_NAME="hospital_records"
@@ -62,7 +60,7 @@ DB_USER="postgres"
 DB_PASSWORD=""
 ```
 
-- OCR URL·Secret은 기존 CLOVA 설정을 사용한다. 프런트에 넣지 않는다.
+- PaddleOCR은 백엔드에서 실행하며 첫 요청에 모델을 내려받는다.
 - DB_PASSWORD는 **학교 PC PostgreSQL의 비밀번호**다. 집 PC와 같을 필요는 없다.
 - `127.0.0.1`은 현재 학교 PC 자신을 뜻하며 집 DB에 연결하는 주소가 아니다.
 - OCR 설정 없이도 DB가 준비되면 기록 관리는 실행되지만 새 사진의 실제 OCR 호출은 실패한다.
@@ -145,10 +143,10 @@ if ($LASTEXITCODE -ne 0) { throw "DB 복원 실패" }
 | 증상 | 확인 |
 |---|---|
 | npm 스크립트 차단 | `npm` 대신 `npm.cmd` |
-| Python 미인식 | 3.13 설치·PATH·`py -3.13 --version` |
+| Python 미인식 | 3.12 설치·PATH·`py -3.12 --version` |
 | DB 연결 실패 | PostgreSQL 서비스·학교 PC 비밀번호·초기화 |
 | 서버 연결 실패 | 백엔드 터미널·8000 포트 |
-| OCR만 실패 | CLOVA URL·Secret·외부 HTTPS·서비스 사용 상태 |
+| OCR만 실패 | 모델 다운로드 및 로컬 CPU 환경 |
 | 기록이 비어 있음 | 새 DB 또는 다른 DB 연결. Git clone은 기록을 복사하지 않음 |
 | 작은 화면에서 가로 스크롤 | 최소 화면 너비를 유지하는 현재 UI의 의도된 동작 |
 

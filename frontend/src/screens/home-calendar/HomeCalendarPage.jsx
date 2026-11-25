@@ -1,3 +1,13 @@
+/**
+ * 1. 목적
+ *    홈에서 날짜를 기준으로 일정과 등록 문서를 확인한다.
+ *
+ * 2. 입력
+ *    캘린더의 기준 날짜와 환자별 일정·문서 데이터를 받는다.
+ *
+ * 3. 주요 기능
+ *    월간 달력과 선택 날짜의 기록을 표시하고 병원 기록 화면으로 이동할 수 있게 한다.
+ */
 import { DocumentList, AppointmentList } from '../../shared-components/DocumentAndAppointmentLists'
 import './HomeCalendarPage.css'
 

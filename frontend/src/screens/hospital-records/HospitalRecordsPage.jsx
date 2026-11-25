@@ -1,3 +1,13 @@
+/**
+ * 1. 목적
+ *    환자의 병원 문서를 찾아 열고 새 문서를 등록할 수 있게 한다.
+ *
+ * 2. 입력
+ *    환자·문서 목록과 선택, 등록, 미리보기 동작을 받는다.
+ *
+ * 3. 주요 기능
+ *    조회 조건에 맞는 문서를 표시하고 등록이나 검수 화면을 열도록 요청한다.
+ */
 import { useState } from 'react'
 import { DocumentList } from '../../shared-components/DocumentAndAppointmentLists'
 import './HospitalRecordsPage.css'

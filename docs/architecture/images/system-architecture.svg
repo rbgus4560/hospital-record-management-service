@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1510" viewBox="0 0 2400 1510">
 <rect width="100%" height="100%" fill="white"/>
 <text x="65" y="82" fill="#172d49" font-family="Malgun Gothic, sans-serif" font-size="47" font-weight="700">병원 영수증에서 일정 확인·PDF까지</text>
-<text x="67" y="128" fill="#64778b" font-family="Malgun Gothic, sans-serif" font-size="26" font-weight="400">사진 업로드 → CLOVA OCR → 좌표 기반 파싱 → 사용자 확인 → 임시 기록·다운로드</text>
+<text x="67" y="128" fill="#64778b" font-family="Malgun Gothic, sans-serif" font-size="26" font-weight="400">사진 업로드 → PaddleOCR → 좌표 기반 파싱 → 사용자 확인 → 기록 저장·다운로드</text>
 <rect x="55" y="190" width="660" height="1160" rx="24" fill="#f3f7fc" stroke="#c4d4e9" stroke-width="2"/>
 <rect x="790" y="190" width="660" height="1160" rx="24" fill="#f3f9f6" stroke="#bed9cf" stroke-width="2"/>
 <rect x="1525" y="190" width="820" height="480" rx="24" fill="#fcf8f1" stroke="#e2d0b1" stroke-width="2"/>
 <rect x="1525" y="790" width="820" height="560" rx="24" fill="#f8f5fc" stroke="#d6c5e6" stroke-width="2"/>
 <text x="95" y="252" fill="#3668a8" font-family="Malgun Gothic, sans-serif" font-size="32" font-weight="700">브라우저 · React</text>
 <text x="830" y="252" fill="#27806a" font-family="Malgun Gothic, sans-serif" font-size="32" font-weight="700">로컬 Python 백엔드</text>
-<text x="1565" y="252" fill="#b57a2c" font-family="Malgun Gothic, sans-serif" font-size="32" font-weight="700">외부 OCR 서비스</text>
+<text x="1565" y="252" fill="#b57a2c" font-family="Malgun Gothic, sans-serif" font-size="32" font-weight="700">로컬 OCR · FastAPI 프로세스</text>
 <text x="1565" y="852" fill="#80609d" font-family="Malgun Gothic, sans-serif" font-size="32" font-weight="700">브라우저 다운로드</text>
 <rect x="150.0" y="335" width="470.0" height="217" rx="18" fill="white" stroke="#d8e3ef" stroke-width="2"/>
 <rect x="340" y="365" width="95" height="83" rx="6" fill="#edf4fd" stroke="#3668a8" stroke-width="3"/>
@@ -29,7 +29,7 @@
 <ellipse cx="1078.0" cy="449.0" rx="4.0" ry="4.0" fill="#27806a" stroke="#27806a" stroke-width="1"/>
 <polyline points="1100,449 1160,449" stroke="#27806a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="1069.0078125" y="505" fill="#27806a" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">FastAPI</text>
-<text x="1013.5" y="540" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">입력 검증 · OCR 중계</text>
+<text x="1013.5" y="540" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">입력 검증 · OCR 실행</text>
 <rect x="1660.0" y="335" width="550.0" height="217" rx="18" fill="white" stroke="#d8e3ef" stroke-width="2"/>
 <rect x="1897" y="375" width="76" height="76" rx="10" fill="#edf4fd" stroke="#b57a2c" stroke-width="4"/>
 <polyline points="1897,391 1882,391" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -45,7 +45,7 @@
 <polyline points="1973,435 1988,435" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <polyline points="1957,451 1957,466" stroke="#b57a2c" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="1920.0" y="421" fill="#b57a2c" font-family="Malgun Gothic, sans-serif" font-size="30" font-weight="700">AI</text>
-<text x="1851.5234375" y="505" fill="#b57a2c" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">CLOVA OCR</text>
+<text x="1857.5078125" y="505" fill="#b57a2c" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">PaddleOCR</text>
 <text x="1816.0" y="540" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">텍스트·좌표·신뢰도 반환</text>
 <path d="M 620 440 L 885 440" stroke="#3668a8" stroke-width="4" fill="none"/>
 <polygon points="885,440 872.58207108109,446.46490845758075 872.58207108109,433.53509154241925" fill="#3668a8"/>
@@ -55,8 +55,8 @@
 <path d="M 1355 440 L 1660 440" stroke="#b57a2c" stroke-width="4" fill="none"/>
 <polygon points="1660,440 1647.58207108109,446.46490845758075 1647.58207108109,433.53509154241925" fill="#b57a2c"/>
 <polygon points="1355,440 1367.41792891891,433.53509154241925 1367.41792891891,446.46490845758075" fill="#b57a2c"/>
-<rect x="1445.0" y="377" width="126.0" height="35" rx="5" fill="white" stroke="white" stroke-width="1"/>
-<text x="1457.0" y="403" fill="#b57a2c" font-family="Malgun Gothic, sans-serif" font-size="23" font-weight="700">② HTTPS</text>
+<rect x="1430.5" y="377" width="155.0" height="35" rx="5" fill="white" stroke="white" stroke-width="1"/>
+<text x="1442.5" y="403" fill="#b57a2c" font-family="Malgun Gothic, sans-serif" font-size="23" font-weight="700">② 로컬 호출</text>
 <rect x="885.0" y="755" width="470.0" height="217" rx="18" fill="white" stroke="#d8e3ef" stroke-width="2"/>
 <rect x="1054" y="790" width="132" height="81" rx="10" fill="white" stroke="#27806a" stroke-width="4"/>
 <polyline points="1055,814 1185,814" stroke="#27806a" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
@@ -95,7 +95,7 @@
 <ellipse cx="385.0" cy="1178.5" rx="14.0" ry="12.5" fill="#edf4fd" stroke="#3668a8" stroke-width="3"/>
 <polyline points="355,1202 365,1192 405,1192 415,1202" stroke="#3668a8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <text x="264.5" y="1265" fill="#3668a8" font-family="Malgun Gothic, sans-serif" font-size="29" font-weight="700">환자별 기록 · 일정</text>
-<text x="259.0078125" y="1300" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">React 메모리 · DB 미연동</text>
+<text x="212.015625" y="1300" fill="#61758a" font-family="Malgun Gothic, sans-serif" font-size="22" font-weight="400">FastAPI를 통해 PostgreSQL에 저장</text>
 <path d="M 385 972 L 385 1090" stroke="#3668a8" stroke-width="4" fill="none"/>
 <polygon points="385,1090 378.53509154241925,1077.58207108109 391.46490845758075,1077.58207108109" fill="#3668a8"/>
 <rect x="289.0" y="1013" width="192.0" height="36" rx="5" fill="white" stroke="white" stroke-width="1"/>
@@ -125,5 +125,5 @@
 <rect x="1369.5" y="989" width="301.0" height="35" rx="5" fill="white" stroke="white" stroke-width="1"/>
 <text x="1381.5" y="1015" fill="#80609d" font-family="Malgun Gothic, sans-serif" font-size="23" font-weight="700">⑥ 선택한 영수증 내보내기</text>
 <text x="67" y="1424" fill="#64778b" font-family="Malgun Gothic, sans-serif" font-size="24" font-weight="400">사용자 확인 전 추출값은 후보입니다. 진단·의료 판단 또는 보험 청구 전송 기능이 아닙니다.</text>
-<text x="67" y="1464" fill="#64778b" font-family="Malgun Gothic, sans-serif" font-size="24" font-weight="400">DB·LLM 요약은 현재 코드에 없음 · 화면 메모리는 새로고침 시 유지되지 않음</text>
+<text x="67" y="1464" fill="#64778b" font-family="Malgun Gothic, sans-serif" font-size="24" font-weight="400">확정한 기록과 일정은 PostgreSQL에 저장</text>
 </svg>

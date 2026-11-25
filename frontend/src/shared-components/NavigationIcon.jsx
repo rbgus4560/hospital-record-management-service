@@ -1,4 +1,13 @@
-/** 제목과 메뉴에서 사용하는 청록색 SVG 아이콘. 장식 요소라 접근성 이름은 메뉴 텍스트가 담당한다. */
+/**
+ * 1. 목적
+ *    메뉴와 제목에 쓰는 아이콘을 일관되게 표시한다.
+ *
+ * 2. 입력
+ *    아이콘 이름과 선택적인 CSS 클래스 이름을 받는다.
+ *
+ * 3. 주요 기능
+ *    이름에 해당하는 장식용 SVG를 렌더링한다.
+ */
 export default function NavigationIcon({ name, className = '' }) {
   const paths = {
     hospital: (

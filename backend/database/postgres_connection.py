@@ -1,4 +1,13 @@
-"""로컬 PostgreSQL 연결. 연결 정보나 의료 데이터를 오류 응답에 노출하지 않는다."""
+"""
+1. 목적
+   백엔드 API에서 공통으로 사용할 PostgreSQL 연결을 관리한다.
+
+2. 입력
+   서버 주소, 포트, DB 이름, 사용자 및 비밀번호를 환경 변수에서 읽는다.
+
+3. 주요 기능
+   DB 연결을 열고, 트랜잭션의 커밋·롤백과 연결 정리를 담당한다.
+"""
 
 import os
 from contextlib import contextmanager

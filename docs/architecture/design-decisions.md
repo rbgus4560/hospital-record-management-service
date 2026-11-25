@@ -14,3 +14,10 @@
 ## 2026-10-25 · PostgreSQL 영구 저장
 
 사용자가 새로고침 중 기록 소실을 보고하고 DB 연결을 요청했다. patients/documents/appointments 3개 테이블을 사용하고 OCR 원본은 JSONB, 원본 이미지는 BYTEA로 보존한다. 외래 키·문서 버전·트랜잭션으로 관계와 편집 충돌을 보호한다. 기존 React 메모리 저장 설명은 이전 상태이며 현재 구현·설정·제한은 [DB 설계](postgresql-schema-and-api.md)를 기준으로 한다. 실제 연결 검증 전에는 영구 저장 완료라고 보고하지 않는다.
+
+## PaddleOCR 한국어 모델 실험
+
+PP-OCRv5 모바일 검출기와 한국어 인식 모델을 CPU에서 실행한다. 인식 결과를 기존 필드 형식으로 변환해 원본 뷰어와 좌표 기반 파서를 재사용한다. 문서 회전과 평탄화는 원본 좌표를 유지하기 위해 끈다.
+
+- 연동 코드 [paddle_ocr.py](../../backend/ocr/paddle_ocr.py)
+- 비교 지표 [OCR 평가 절차](../../ocr-evaluation/README.md)

@@ -1,4 +1,13 @@
-/** 앱 화면과 사용자 흐름을 조율한다. DB 상태 조회, 환자·문서 저장 및 OCR 검수 상태를 관리한다. */
+/**
+ * 1. 목적
+ *    MediLog 메뉴와 환자별 작업 흐름을 연결한다.
+ *
+ * 2. 입력
+ *    서버에서 받은 환자·문서·일정과 사용자의 메뉴 선택 및 폼 입력을 받는다.
+ *
+ * 3. 주요 기능
+ *    화면 전환, 기록 등록, OCR 검수와 일정 확정 상태를 관리한다.
+ */
 import NavigationIcon from './shared-components/NavigationIcon'
 import { useEffect, useRef, useState } from 'react'
 import { api, documentPayload, appointmentPayload } from './api/hospitalRecordsApi'
@@ -9,6 +18,8 @@ import PatientRegistrationForm from './screens/patient-management/PatientRegistr
 import AppointmentManagementPage from './screens/appointment-management/AppointmentManagementPage'
 import HospitalRecordsPage from './screens/hospital-records/HospitalRecordsPage'
 import DocumentUploadForm from './screens/hospital-records/DocumentUploadForm'
+import DemoReceiptForm from './screens/hospital-records/DemoReceiptForm'
+import { createDemoReceiptImage } from './screens/hospital-records/demoReceiptImage'
 import OcrReviewDialog from './screens/hospital-records/OcrReviewDialog'
 import './shared-styles/appLayout.css'
 import './shared-styles/managementForms.css'
@@ -55,6 +66,8 @@ export default function HospitalRecordsApp() {
 
   const [patientForm, setPatientForm] = useState(null)
   const [documentForm, setDocumentForm] = useState(null)
+  const [demoName, setDemoName] = useState(null)
+  const [demoImage, setDemoImage] = useState('')
   const [notice, setNotice] = useState('')
   const [formError, setFormError] = useState('')
   const [readingPhoto, setReadingPhoto] = useState(false)
@@ -127,6 +140,8 @@ export default function HospitalRecordsApp() {
     photoRequest.current += 1
     setReadingPhoto(false)
     setPatientForm(null)
+    setDemoName(null)
+    setDemoImage('')
     setDocumentForm(null)
     setFormError('')
 
@@ -193,6 +208,30 @@ export default function HospitalRecordsApp() {
       }
       setNotice('환자를 삭제했습니다.')
     }, setNotice)
+  }
+
+  function openDemoReceipt(event) {
+    modalTrigger.current = event.currentTarget
+    setFormError('')
+    setDemoName('')
+  }
+
+  async function previewDemoReceipt(event) {
+    event.preventDefault()
+    const name = demoName.trim()
+    if (!name || readingPhoto) return
+    const request = ++photoRequest.current
+    setFormError('')
+    setReadingPhoto(true)
+    try {
+      const url = await createDemoReceiptImage(name)
+      if (request !== photoRequest.current) return
+      setDemoImage(url)
+    } catch {
+      if (request === photoRequest.current) setFormError('샘플 영수증을 만들지 못했습니다.')
+    } finally {
+      if (request === photoRequest.current) setReadingPhoto(false)
+    }
   }
 
   function openDocumentForm(event) {
@@ -461,7 +500,7 @@ export default function HospitalRecordsApp() {
     }, setNotice)
   }
 
-  const modalOpen = Boolean(patientForm || documentForm || review)
+  const modalOpen = Boolean(patientForm || demoName !== null || documentForm || review)
 
   return (
     <>
@@ -527,6 +566,13 @@ export default function HospitalRecordsApp() {
                 </button>
               ))}
             </nav>
+            <button
+              type="button"
+              className="secondary-button demo-receipt-button"
+              onClick={openDemoReceipt}
+            >
+              체험용 영수증 만들기
+            </button>
           </aside>
 
           <main className="main-content">
@@ -608,6 +654,18 @@ export default function HospitalRecordsApp() {
             savePatient={savePatient}
             closeModal={closeModal}
             formError={formError}
+          />
+        )}
+
+        {demoName !== null && (
+          <DemoReceiptForm
+            name={demoName}
+            image={demoImage}
+            setName={setDemoName}
+            preview={previewDemoReceipt}
+            busy={readingPhoto}
+            error={formError}
+            closeModal={closeModal}
           />
         )}
 

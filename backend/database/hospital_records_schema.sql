@@ -1,4 +1,11 @@
--- 환자·문서·확정 일정의 PostgreSQL 구조. 데이터 보존 관계는 RESTRICT/CASCADE 외래 키로 관리한다.
+-- 1. 목적
+--    병원 기록이 PostgreSQL에 어떤 구조로 저장되는지 정의한다.
+--
+-- 2. 입력
+--    초기화 코드가 연결한 PostgreSQL 데이터베이스에서 실행한다.
+--
+-- 3. 주요 기능
+--    환자·문서·일정·청구 묶음 테이블과 외래 키, 인덱스, 기존 일정 상태 보완 규칙을 정의한다.
 CREATE TABLE IF NOT EXISTS patients (
  id UUID PRIMARY KEY,
  name TEXT NOT NULL CHECK (length(trim(name)) > 0),

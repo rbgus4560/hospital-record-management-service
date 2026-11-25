@@ -1,4 +1,13 @@
-/* 왼쪽 캘린더 / 오른쪽 일정과 문서 각각 절반 */
+/*
+ * 1. 목적
+ *    홈의 달력과 날짜별 기록이 함께 보이도록 배치한다.
+ *
+ * 2. 입력
+ *    홈 화면의 캘린더와 일정·문서 영역에 적용된다.
+ *
+ * 3. 주요 기능
+ *    캘린더와 기록 패널의 크기, 간격, 내부 스크롤을 조정한다.
+ */
 .dashboard-grid {
   display: grid;
   /* 줄이기 전 가용 폭의 7/11을 유지해 캘린더 크기는 그대로 둔다. */
@@ -215,4 +224,15 @@
 }
 .schedule-panel .item-details p {
   margin-top: 5px;
+}
+
+/* 목록이 비어도 카드 제목과 본문 사이의 경계를 유지한다. */
+.schedule-panel > .panel-body,
+.documents-panel > .panel-body {
+  border-top: 1px solid #edf0f4;
+}
+
+.schedule-panel > .panel-body > .schedule-item:first-child,
+.documents-panel > .panel-body > .document-item:first-child {
+  border-top: 0;
 }

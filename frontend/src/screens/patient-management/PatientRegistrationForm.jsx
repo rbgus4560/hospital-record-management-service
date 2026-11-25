@@ -1,3 +1,13 @@
+/**
+ * 1. 목적
+ *    환자의 기본 정보를 등록하거나 수정할 때 쓰는 폼이다.
+ *
+ * 2. 입력
+ *    신규 입력 또는 기존 환자 정보와 저장 동작을 받는다.
+ *
+ * 3. 주요 기능
+ *    입력 필드를 표시하고 값 변경, 저장 요청과 닫기를 처리한다.
+ */
 import ModalDialog from '../../shared-components/ModalDialog'
 
 export default function PatientRegistrationForm({

@@ -1,4 +1,13 @@
-/** 문서와 확정 일정의 표시 컴포넌트. 데이터 변경과 원본 열기는 상위 화면 콜백에 위임한다. */
+/**
+ * 1. 목적
+ *    문서와 확정 일정의 목록 표시를 여러 화면에서 공유한다.
+ *
+ * 2. 입력
+ *    표시할 문서·일정과 문서 선택 및 미리보기 동작을 받는다.
+ *
+ * 3. 주요 기능
+ *    문서 목록과 일정 목록을 표시하고 문서 조작은 상위 화면에 전달한다.
+ */
 export function DocumentList({ items, onPreview, selectedId, onSelect }) {
   if (!items.length) {
     return <p className="empty-message">등록된 문서가 없습니다.</p>

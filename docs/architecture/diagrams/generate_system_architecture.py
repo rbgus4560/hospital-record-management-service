@@ -1,4 +1,13 @@
-"""README 구성도 생성. 원본 벡터(SVG)와 한글 폰트를 적용한 PNG를 함께 출력한다."""
+"""
+1. 목적
+   개발 문서에 넣는 시스템 구성도를 다시 생성한다.
+
+2. 입력
+   코드에 정의된 설명·좌표·색상과 한글 글꼴을 사용한다.
+
+3. 주요 기능
+   브라우저, FastAPI, PaddleOCR과 내보내기의 흐름을 PNG와 SVG로 저장한다.
+"""
 
 from pathlib import Path
 from html import escape
@@ -180,7 +189,7 @@ text(65, 35, "병원 영수증에서 일정 확인·PDF까지", 47, "#172d49", T
 text(
     67,
     102,
-    "사진 업로드 → CLOVA OCR → 좌표 기반 파싱 → 사용자 확인 → 임시 기록·다운로드",
+    "사진 업로드 → PaddleOCR → 좌표 기반 파싱 → 사용자 확인 → 기록 저장·다운로드",
     26,
     "#64778b",
 )
@@ -190,22 +199,22 @@ rect((1525, 190, 2345, 670), "#fcf8f1", "#e2d0b1", 24)
 rect((1525, 790, 2345, 1350), "#f8f5fc", "#d6c5e6", 24)
 text(95, 220, "브라우저 · React", 32, BLUE, True)
 text(830, 220, "로컬 Python 백엔드", 32, GREEN, True)
-text(1565, 220, "외부 OCR 서비스", 32, AMBER, True)
+text(1565, 220, "로컬 OCR · FastAPI 프로세스", 32, AMBER, True)
 text(1565, 820, "브라우저 다운로드", 32, "#80609d", True)
 card(385, 440, "영수증 업로드", "files", "JPG / PNG", BLUE, 470)
-card(1120, 440, "FastAPI", "server", "입력 검증 · OCR 중계", GREEN, 470)
-card(1935, 440, "CLOVA OCR", "ai", "텍스트·좌표·신뢰도 반환", AMBER, 550)
+card(1120, 440, "FastAPI", "server", "입력 검증 · OCR 실행", GREEN, 470)
+card(1935, 440, "PaddleOCR", "ai", "텍스트·좌표·신뢰도 반환", AMBER, 550)
 arrow(620, 440, 885, 440, BLUE, True)
 label(752, 380, "① 이미지 / 결과", BLUE, 23)
 arrow(1355, 440, 1660, 440, AMBER, True)
-label(1508, 380, "② HTTPS", AMBER, 23)
+label(1508, 380, "② 로컬 호출", AMBER, 23)
 card(1120, 860, "영수증 파서", "app", "영역·날짜·금액 규칙 추출", GREEN, 470)
 arrow(1120, 552, 1120, 750, GREEN, True)
 label(1120, 637, "③ OCR 좌표 → 후보", GREEN, 24)
 card(385, 860, "확인 · 수정", "app", "원본·인식 영역·일정 후보", BLUE, 470)
 arrow(885, 860, 620, 860, GREEN)
 label(752, 798, "④ 추출 결과", GREEN, 23)
-card(385, 1200, "환자별 기록 · 일정", "app", "React 메모리 · DB 미연동", BLUE, 510)
+card(385, 1200, "환자별 기록 · 일정", "app", "FastAPI를 통해 PostgreSQL에 저장", BLUE, 510)
 arrow(385, 972, 385, 1090, BLUE)
 label(385, 1016, "⑤ 확인 후 반영", BLUE, 24)
 card(1120, 1200, "OCR 원본 JSON", "files", "백엔드 디버그 보관", GREEN, 470)
@@ -226,7 +235,7 @@ text(
 text(
     67,
     1440,
-    "DB·LLM 요약은 현재 코드에 없음 · 화면 메모리는 새로고침 시 유지되지 않음",
+    "확정한 기록과 일정은 PostgreSQL에 저장",
     24,
     "#64778b",
 )

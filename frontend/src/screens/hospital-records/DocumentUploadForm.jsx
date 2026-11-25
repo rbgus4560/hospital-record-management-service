@@ -1,3 +1,13 @@
+/**
+ * 1. 목적
+ *    환자에게 연결할 병원 문서의 등록 입력을 받는다.
+ *
+ * 2. 입력
+ *    문서 종류·날짜·병원 이름과 사용자가 고른 사진을 받는다.
+ *
+ * 3. 주요 기능
+ *    사진 미리보기와 입력 상태를 보여 주고 등록 및 OCR 추출을 요청한다.
+ */
 import ModalDialog from '../../shared-components/ModalDialog'
 
 export default function DocumentUploadForm({

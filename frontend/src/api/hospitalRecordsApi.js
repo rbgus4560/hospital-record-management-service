@@ -1,4 +1,13 @@
-/** FastAPI 공통 통신 계층. API 주소·JSON 변환·실패 메시지와 DB 입력 형태 변환을 한곳에서 관리한다. */
+/**
+ * 1. 목적
+ *    여러 화면이 같은 방식으로 FastAPI를 호출하게 한다.
+ *
+ * 2. 입력
+ *    API 주소, 요청 경로와 전송할 데이터 또는 저장할 문서·일정을 받는다.
+ *
+ * 3. 주요 기능
+ *    요청과 응답을 JSON으로 다루고 오류 메시지를 정리한다. 빈 날짜·시간은 저장용 null로 변환한다.
+ */
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
 
 export function apiUrl(path) {

@@ -1,4 +1,13 @@
-/** 보험 청구용 영수증 선택·미리보기·파일명 편집·PDF/ZIP 생성 흐름을 관리한다. 보험사 전송 기능은 없다. */
+/**
+ * 1. 목적
+ *    보험 청구에 사용할 영수증 파일을 준비하는 화면을 제공한다.
+ *
+ * 2. 입력
+ *    환자별 등록 문서와 이미 만든 청구 묶음을 받는다.
+ *
+ * 3. 주요 기능
+ *    영수증 선택, 미리보기, 파일명 편집, PDF·ZIP 만들기 및 재다운로드를 처리한다.
+ */
 import { useEffect, useState } from 'react'
 import { api, apiUrl } from '../../api/hospitalRecordsApi'
 import { createPdf, downloadBlob } from './receiptPdfExport'

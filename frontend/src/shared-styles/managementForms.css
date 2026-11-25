@@ -1,4 +1,13 @@
-/* 환자 표, 등록 폼, 공통 모달과 좌우 OCR 검수창의 배치·버튼 스타일. */
+/*
+ * 1. 목적
+ *    환자·문서 관리 화면의 폼과 팝업 스타일을 공유한다.
+ *
+ * 2. 입력
+ *    관리 목록, 입력 폼, 팝업과 OCR 검수 화면에 적용된다.
+ *
+ * 3. 주요 기능
+ *    입력·버튼·표를 정렬하고 검수창의 원본과 수정 영역을 별도로 스크롤하게 한다.
+ */
 .main-content {
   max-width: none;
   margin: 0;
@@ -149,4 +158,18 @@
   height: 18px;
   flex-shrink: 0;
   accent-color: #009395;
+}
+
+/* 화면 높이에 맞춰 영수증 전체를 보여 주고 다운로드 버튼을 바로 아래에 둔다. */
+.management-modal.demo-preview-modal {
+  width: min(620px, 100%);
+}
+
+.demo-preview-image img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(66dvh, calc(90dvh - 180px));
+  margin-inline: auto;
 }

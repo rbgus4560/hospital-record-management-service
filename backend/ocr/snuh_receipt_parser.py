@@ -1,7 +1,12 @@
-"""서울대 영수증 배치의 OCR 좌표를 해석해 기본 정보·금액·진료/검사 후보를 추출한다.
+"""
+1. 목적
+   서울대병원 영수증에서 읽은 글자를 검수 가능한 정보로 정리한다.
 
-표준 라이브러리만 사용하는 규칙 파서다. 다른 서식의 범용 정확도를 보장하지 않으며
-원본 필드 인덱스·경고를 보존해 사용자가 결과를 확인할 수 있게 한다.
+2. 입력
+   OCR이 읽은 텍스트, 위치, 신뢰도와 필드 순서를 받는다.
+
+3. 주요 기능
+   기준 제목과 표 좌표로 기본 정보·진료비·결제 정보·일정을 찾는다. 날짜별로 시간 조각을 묶고 원본 필드 번호와 검토 경고를 남긴다.
 """
 
 import json
@@ -40,12 +45,9 @@ def extract_schedules(fields):
         except (KeyError, TypeError, ValueError, ZeroDivisionError):
             continue
 
-    def compact(text):
-        return re.sub(r"\s+", "", text)
-
     def heading(keyword):
         for t in tokens:
-            if keyword not in compact(t["text"]):
+            if keyword not in compact_text(t["text"]):
                 continue
             # 같은 줄에서 가까이 있는 제목 글자들을 확인합니다.
             nearby = sorted(
@@ -57,7 +59,9 @@ def extract_schedules(fields):
                 ],
                 key=lambda p: p["x"],
             )
-            if "다음에오실" + keyword in compact("".join(p["text"] for p in nearby)):
+            if "다음에오실" + keyword in compact_text(
+                "".join(p["text"] for p in nearby)
+            ):
                 return dict(
                     x=(nearby[0]["left"] + t["right"]) / 2,
                     y=t["y"],
@@ -74,19 +78,20 @@ def extract_schedules(fields):
             "regions": [],
             "warnings": ["진료일·검사일 제목을 찾지 못했습니다. 원본을 확인해 주세요."],
         }
+    # 두 제목 사이의 중점을 기준으로 진료와 검사 열을 나눈다.
     distance = exam["x"] - visit["x"]
     boundary = (visit["x"] + exam["x"]) / 2
+    bottom = max(t["y"] + t["height"] / 2 for t in tokens)
     for kind, anchor, left, right in (
         ("진료", visit, visit["x"] - distance / 2, boundary),
         ("검사", exam, boundary, exam["x"] + distance / 2),
     ):
-        # 제목 간격을 이용한 상대 영역. 다른 양식/하단 안내문에서는 검증 필요.
         region = dict(
             type=kind,
             left=left,
             right=right,
             top=anchor["y"] + anchor["height"] / 2,
-            bottom=max(t["y"] + t["height"] / 2 for t in tokens),
+            bottom=bottom,
         )
         regions.append(region)
         subset = [
@@ -97,10 +102,11 @@ def extract_schedules(fields):
             if subset
             else anchor["height"]
         )
+        # 날짜를 일정의 시작점으로 삼고 다음 날짜 앞에서 한 건을 끝낸다.
         dates = []
         for t in sorted(subset, key=lambda p: p["y"]):
             match = re.fullmatch(
-                r"(20\d{2})[-./](\d{1,2})[-./](\d{1,2})", compact(t["text"])
+                r"(20\d{2})[-./](\d{1,2})[-./](\d{1,2})", compact_text(t["text"])
             )
             if match:
                 try:
@@ -137,14 +143,17 @@ def extract_schedules(fields):
                 )
                 for r in rows
             ]
-            time_value = next(
-                (
-                    t["text"]
-                    for t in block
-                    if re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", t["text"])
-                ),
-                None,
-            )
+            # PaddleOCR이 같은 줄의 시·콜론·분을 별도 필드로 반환할 수 있다.
+            # 초까지 붙은 시각은 일정의 시·분으로 가져오지 않는다.
+            time_value = None
+            for line in lines:
+                match = re.search(
+                    r"(?<![\d:])(?<!:\s)([01]\d|2[0-3])\s*:\s*([0-5]\d)(?!\d|\s*:)",
+                    line,
+                )
+                if match:
+                    time_value = f"{match[1]}:{match[2]}"
+                    break
             details = [
                 line for line in lines[1:] if line and not line.startswith("(총")
             ]
@@ -170,7 +179,7 @@ def extract_schedules(fields):
                 first = sorted(rows[0], key=lambda p: p["x"]) if rows else []
                 name = [t["text"] for t in first if "검사" in t["text"]]
                 item["examination"] = " ".join(name) or None
-                # 줄바꿈된 장소도 보존. 임의의 글자 교정은 하지 않음.
+                # 대괄호로 표시된 검사 장소가 여러 줄이면 이어 붙인다.
                 location_parts = []
                 for line in lines:
                     if "[" in line:
@@ -198,12 +207,12 @@ def extract_schedules(fields):
     }
 
 
-# 네 영역 추출에 사용하는 공통 도구입니다.
 def compact_text(value):
     return re.sub(r"\s+", "", value)
 
 
 def make_tokens(fields):
+    """상단과 금액 표를 읽을 수 있도록 필드 좌표를 중심점으로 변환한다."""
     result = []
     for index, field in enumerate(fields):
         try:
@@ -280,17 +289,36 @@ def money_value(text):
     return int(digits.replace(",", ""))
 
 
+def receipt_columns(registration, heading):
+    """표의 기준점 두 개로 양식 좌표를 현재 이미지의 가로 좌표에 맞춘다."""
+    scale = (heading["x"] - registration["x"]) / 2956
+
+    def x_at(template_x):
+        return registration["x"] + (template_x - 450) * scale
+
+    return scale, x_at
+
+
 def extract_document_info(tokens, registration, payment_heading):
     """상단 표를 행으로 묶고, 라벨 오른쪽 값을 열별로 연결합니다."""
-    scale = (payment_heading["x"] - registration["x"]) / 2956
-    x_at = lambda x: registration["x"] + (x - 450) * scale
+    _, x_at = receipt_columns(registration, payment_heading)
     top = [t for t in tokens if t["y"] < payment_heading["y"] - payment_heading["h"]]
+    # 같은 열의 여러 항목이 행 묶음과 라벨 텍스트를 공유한다.
+    column_rows = {
+        (left, right): [
+            (row_text(row), row)
+            for row in group_rows(
+                [t for t in top if x_at(left) <= t["x"] < x_at(right)]
+            )
+        ]
+        for left, right in ((150, 1200), (1200, 2300), (2300, 3450))
+    }
     result = {}
 
     def value_after(key, label, left, right):
-        area = [t for t in top if x_at(left) <= t["x"] < x_at(right)]
-        rows = group_rows(area)
-        target = next((r for r in rows if label in row_text(r)), None)
+        target = next(
+            (row for text, row in column_rows[left, right] if label in text), None
+        )
         if target is None:
             result[key] = candidate()
             return
@@ -340,8 +368,7 @@ def extract_document_info(tokens, registration, payment_heading):
 
 def extract_payment_info(tokens, registration, heading, schedules):
     """금액 요약과 결제 표를 읽습니다. 출력이 위로 밀린 값은 후보로 표시합니다."""
-    scale = (heading["x"] - registration["x"]) / 2956
-    x_at = lambda x: registration["x"] + (x - 450) * scale
+    _, x_at = receipt_columns(registration, heading)
     bottom = min((r["top"] for r in schedules["regions"]), default=float("inf"))
     region = [
         t for t in tokens if x_at(2900) < t["x"] and heading["y"] < t["y"] < bottom
@@ -429,16 +456,13 @@ def extract_payment_info(tokens, registration, heading, schedules):
 
 def extract_fee_items(tokens, registration, heading):
     """표의 항목 행과 부담금 열을 대조합니다. 빈 셀은 null로 유지합니다."""
-    scale = (heading["x"] - registration["x"]) / 2956
-    x_at = lambda x: registration["x"] + (x - 450) * scale
+    scale, x_at = receipt_columns(registration, heading)
     table = [t for t in tokens if t["y"] > heading["y"] and t["x"] < x_at(2900)]
     total_anchors = [t for t in table if re.search(r"\d[①②③④]", t["text"])]
     if total_anchors:
-        table = [
-            t
-            for t in table
-            if t["y"] <= max(p["y"] + p["h"] * 1.5 for p in total_anchors)
-        ]
+        # 합계 행 아래의 안내문과 일정에서 금액을 가져오지 않도록 범위를 자른다.
+        table_bottom = max(t["y"] + t["h"] * 1.5 for t in total_anchors)
+        table = [t for t in table if t["y"] <= table_bottom]
     rows = group_rows([t for t in table if x_at(300) < t["x"] < x_at(800)])
     columns = [
         ("patient_copay", 800, 1310),
@@ -581,8 +605,7 @@ def extract_receipt(fields):
             "기본 정보·진료비 영역의 기준 제목을 찾지 못했습니다."
         )
         return result
-    scale = (heading["x"] - registration["x"]) / 2956
-    x_at = lambda x: registration["x"] + (x - 450) * scale
+    _, x_at = receipt_columns(registration, heading)
     top = min(t["y"] - t["h"] / 2 for t in tokens)
     total_rows = [t for t in tokens if re.search(r"\d[①②③④]", t["text"])]
     table_bottom = max(

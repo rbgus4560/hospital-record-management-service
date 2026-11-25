@@ -1,4 +1,13 @@
-/** 공통 모달: 배경 클릭·Escape 닫기와 Tab 포커스 순환을 담당한다. */
+/**
+ * 1. 목적
+ *    등록·수정·검수에 쓰는 공통 팝업을 제공한다.
+ *
+ * 2. 입력
+ *    팝업 제목, 내부 콘텐츠와 닫기 동작을 받는다.
+ *
+ * 3. 주요 기능
+ *    배경 클릭·Escape 닫기와 Tab 키 포커스 순환을 처리한다.
+ */
 import { useRef } from 'react'
 
 export default function ModalDialog({ title, children, onClose, className = '' }) {
@@ -23,7 +32,7 @@ export default function ModalDialog({ title, children, onClose, className = '' }
           if (event.key === 'Tab') {
             const elements = Array.from(
               dialog.current.querySelectorAll(
-                'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)',
+                'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex="0"]',
               ),
             )
             const first = elements[0]

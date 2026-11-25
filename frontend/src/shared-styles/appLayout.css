@@ -1,4 +1,13 @@
-/* 전체 화면·사이드바·캘린더·목록·검수 입력의 공통 스타일. 작은 창에서는 기준 너비를 유지한다. */
+/*
+ * 1. 목적
+ *    앱 외곽과 여러 화면이 함께 쓰는 배치를 정의한다.
+ *
+ * 2. 입력
+ *    사이드바, 메뉴 영역, 버튼과 공통 목록 클래스에 적용된다.
+ *
+ * 3. 주요 기능
+ *    화면 너비와 높이에 따라 기본 배치와 스크롤 방식을 조정한다.
+ */
 /* PC에서는 화면 높이 안에서 배치 */
 .app-layout {
   display: grid;
@@ -8,11 +17,24 @@
 }
 
 .sidebar {
+  display: flex;
+  flex-direction: column;
   min-height: 0;
   padding: 28px 18px;
   overflow-y: auto;
   background: #fff;
   border-right: 1px solid #e3e9f0;
+}
+
+.demo-receipt-button {
+  margin-top: auto;
+  align-self: stretch;
+}
+
+.demo-download {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 .brand {

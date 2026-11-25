@@ -1,4 +1,13 @@
-"""CLOVA 원본과 파서 출력을 사람이 옮겨 적은 영수증 정답과 비교한다."""
+"""
+1. 목적
+   OCR 모델이나 파싱 규칙을 바꾼 뒤, 같은 영수증에서 인식과 추출 성능이 어떻게 달라졌는지 확인한다.
+
+2. 입력
+   저장된 OCR 결과와 사람이 영수증 원본을 보고 작성한 정답 JSON을 사용한다.
+
+3. 주요 기능
+   영역별 문자 오류율을 계산하고 진료·검사 일정의 일치·누락·추가 건수를 JSON 보고서로 저장한다.
+"""
 
 import argparse
 import json
@@ -41,10 +50,10 @@ def edit_distance(expected, actual):
 def raw_fields(raw):
     images = raw["images"]
     if len(images) != 1 or images[0].get("inferResult") != "SUCCESS":
-        raise ValueError("영수증 한 장의 성공한 CLOVA 응답이 필요합니다.")
+        raise ValueError("영수증 한 장의 성공한 OCR 응답이 필요합니다.")
     fields = images[0]["fields"]
     if not isinstance(fields, list):
-        raise TypeError("CLOVA fields 목록이 필요합니다.")
+        raise TypeError("OCR fields 목록이 필요합니다.")
     return fields
 
 

@@ -25,7 +25,7 @@ hospital-record-management-service/
 │   ├── patient_document_records_api.py
 │   ├── insurance_claim_files_api.py
 │   ├── ocr/
-│   │   ├── clova_ocr_api.py
+│   │   ├── ocr_api.py
 │   │   └── snuh_receipt_parser.py
 │   ├── database/
 │   │   ├── postgres_connection.py
@@ -91,7 +91,7 @@ hospital-record-management-service/
 | `backend/database/hospital_records_schema.sql` | 테이블 설계 원본 | patients/documents/appointments의 컬럼·타입·CHECK·PK·FK·인덱스를 정의한다. Python init_db.py가 읽어 실행한다. |
 | `backend/requirements.txt` | 서버 실행 패키지 목록 | FastAPI·Uvicorn·Requests·dotenv·Pydantic·psycopg 버전을 지정해 API 실행 환경을 재현한다. |
 | `backend/requirements-dev.txt` | 개발 검사 패키지 목록 | HTTP 테스트용 httpx와 Python 포맷터 Ruff를 지정한다. 서비스 실행용 의존성과 구분한다. |
-| `backend/.env.example` | 공유 가능한 설정 양식 | CLOVA·DB 변수 이름과 기본 연결 예시를 제공한다. 실제 비밀번호·키는 넣지 않는다. .env 작성 시 참고한다. |
+| `backend/.env.example` | 공유 가능한 설정 양식 | DB 변수 이름과 기본 연결 예시를 제공한다. 실제 비밀번호·키는 넣지 않는다. .env 작성 시 참고한다. |
 | `backend/tests/test_patient_document_records_api.py` | 저장 기능의 회귀 검증 | 설정 누락·잘못된 입력과 실제 PostgreSQL CRUD·새 연결 재조회·삭제 보호·버전 충돌·롤백을 검사한다. 자체 임시 스키마만 만들고 정리한다. |
 
 ## 3-3. 정적 이미지·아이콘
@@ -115,7 +115,6 @@ hospital-record-management-service/
 | `docs/development/test-and-validation-log.md` | 검증 증거와 한계 | 실행한 빌드·린트·포맷·DB 테스트와 사용자 확인·미실행 항목을 구분해 기록한다. |
 | `docs/development/source-publication-log.md` | 이전 소스 공개 범위 기록 | 2026-10-23 공유 대상과 제외 파일을 남긴 과거 문서다. 이후 DB·리팩토링 파일까지 반영한 최신 전체 목록은 아니다. |
 | `docs/archive/original-vite-readme.md` | 최초 템플릿 안내 보존 | React+Vite 초기 README를 보관한다. 현재 서비스 실행 지침은 루트 README를 따른다. |
-| `docs/archive/previous-github-readme.md` | 수정 전 소개 자료 보존 | 과거 GitHub 설명을 남긴다. 당시 계획과 실제 구현을 구분하는 참고 자료이며 최신 사양이 아니다. |
 | `docs/architecture/diagrams/generate_system_architecture.py` | 구성도 생성 소스 | 구성도 이미지의 텍스트·좌표·배치 등을 코드로 정의한다. 이미지만 수정하는 대신 재생성 근거를 남긴다. |
 | `docs/architecture/images/system-architecture.svg` | 편집·확대 가능한 구성도 | README에서 연결하는 벡터 그림이다. 현재 파일은 DB 도입 전 구조 자료이므로 발표 전 최신 DB 흐름 반영이 필요하다. |
 | `docs/architecture/images/system-architecture.png` | README 표시용 구성도 | SVG와 같은 구성의 래스터 이미지다. 실행 코드가 아니며 최신 DB 구조는 database.md와 실제 코드가 기준이다. |
@@ -132,7 +131,7 @@ hospital-record-management-service/
 | `.ruff_cache/`, `backend/.ruff_cache/` | Ruff 검사·포맷 캐시 | 소스나 DB가 아니다. 자동 생성 |
 | `backend/.venv/` | 프로젝트 Python·라이브러리·실행 도구 격리 환경 | 이 컴퓨터 전용. Git 제외 |
 | `backend/__pycache__/`, `backend/tests/__pycache__/` | Python이 만든 바이트코드 캐시 | 자동 생성. 소스는 .py |
-| `backend/.env` | 실제 CLOVA 키·URL, PostgreSQL 연결 정보 | 비밀 파일. 값을 공유하거나 Git에 올리지 않음 |
+| `backend/.env` | 실제 PostgreSQL 연결 정보 | 비밀 파일. 값을 공유하거나 Git에 올리지 않음 |
 | `backend/ocr_results/` | OCR API 원본 응답을 남기는 디버그 JSON | 실제 의료 정보 포함 가능. DB 영구 기록과 구분, Git 제외 |
 | `.vscode/settings.json` | 이 프로젝트 VS Code 터미널에서 Node/npm을 찾도록 하는 로컬 PATH | 사용자 PC 절대 경로이므로 Git 제외 |
 | `.setup.local/package/` | 초기 환경에서 사용한 로컬 npm 배포본 | 현재 일반 Node/npm 설치 후에는 기존 실행 도우미와의 관계 확인 필요 |
@@ -164,7 +163,7 @@ hospital-record-management-service/
 
 1. App에서 환자와 이미지를 선택하고 이미지 형식·크기를 확인한다.
 2. api.js가 `/api/ocr`로 전송한다.
-3. main.py가 입력을 검증하고 서버의 .env 설정으로 CLOVA OCR을 호출한다.
+3. main.py가 입력을 검증하고 서버에서 PaddleOCR을 실행한다.
 4. snuh_receipt_parser.py가 응답 좌표·문자를 업무 항목과 일정 후보로 해석한다.
 5. App이 `/api/documents`를 호출해 원본과 OCR 결과를 미확정 문서로 저장한다.
 6. Modal과 OcrImageViewer에서 원본·인식 근거를 보면서 값을 수정한다.
@@ -184,7 +183,7 @@ hospital-record-management-service/
 | 환자 표·관리 버튼·검수창 배치 | Management.css, HospitalRecordsApp.jsx |
 | OCR 인식 영역·선택 표시 | OcrImageViewer.jsx, OcrImageViewer.css |
 | 날짜·진료과·금액 추출 규칙 | backend/ocr/snuh_receipt_parser.py |
-| 외부 OCR 오류·요청 검증 | backend/ocr/clova_ocr_api.py |
+| 외부 OCR 오류·요청 검증 | backend/ocr/ocr_api.py |
 | 환자·문서·일정 저장 API | backend/patient_document_records_api.py |
 | DB 연결 설정 | backend/database/postgres_connection.py, 로컬 .env |
 | 테이블 컬럼·관계 | backend/database/hospital_records_schema.sql, docs/architecture/postgresql-schema-and-api.md |
@@ -200,7 +199,7 @@ hospital-record-management-service/
 
 ## 9. 현재 상태와 구분해야 할 내용
 
-- 실제 OCR 서비스는 CLOVA이며, Python 좌표 파서는 자체 학습 모델이 아닌 규칙 코드다.
+- OCR은 PaddleOCR을 사용하며, Python 좌표 파서는 자체 학습 모델이 아닌 규칙 코드다.
 - 로그인·사용자별 접근 권한·실제 보험사 제출·LLM 요약은 현재 기능이 아니다.
 - 저장 API의 실제 DB 통합 테스트와 브라우저 새로고침 후 기록 유지는 확인됐지만, 이후 UI 변경 전체를 에이전트가 브라우저에서 재검증했다고 주장하지 않는다.
 - 과거 history 문서와 DB 도입 전 구성도는 최신 구현과 구분해 사용한다.

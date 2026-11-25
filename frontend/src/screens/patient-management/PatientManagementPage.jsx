@@ -1,3 +1,13 @@
+/**
+ * 1. 목적
+ *    등록 환자를 확인하고 관리할 수 있게 한다.
+ *
+ * 2. 입력
+ *    환자 목록과 등록·수정·삭제를 요청하는 동작을 받는다.
+ *
+ * 3. 주요 기능
+ *    환자 정보를 목록으로 표시하고 선택한 관리 동작을 상위 화면에 전달한다.
+ */
 import './PatientManagementPage.css'
 
 export default function PatientManagementPage({

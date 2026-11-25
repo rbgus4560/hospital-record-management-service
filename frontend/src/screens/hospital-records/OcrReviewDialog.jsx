@@ -1,3 +1,13 @@
+/**
+ * 1. 목적
+ *    OCR 후보와 원본을 비교해 저장할 일정을 확정할 수 있게 한다.
+ *
+ * 2. 입력
+ *    문서 원본과 OCR 결과, 현재 수정 값 및 저장 동작을 받는다.
+ *
+ * 3. 주요 기능
+ *    인식 영역·추출값을 표시하고 후보 선택, 수정, 저장 결과 재분석 및 확정을 요청한다.
+ */
 import ModalDialog from '../../shared-components/ModalDialog'
 import OcrImageViewer from './OcrImageViewer'
 
@@ -118,8 +128,7 @@ export default function OcrReviewDialog({
               </button>
             )}
             <p className="panel-caption">
-              다시 분석하면 현재 수정 중인 일정 후보를 새 추출 결과로 교체합니다. CLOVA를 재호출하지
-              않습니다.
+              저장된 OCR 결과로 일정 후보를 다시 추출해 현재 후보를 교체합니다.
             </p>
             <details className="review-json">
               <summary>전체 OCR 텍스트 보기</summary>
