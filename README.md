@@ -124,8 +124,8 @@ docker compose up --build -d --wait
 #### 1. 저장소 복제 및 의존성 설치
 
 ```powershell
-git clone https://github.com/rbgus4560/hospital-record-management-service.git
-cd hospital-record-management-service
+git clone https://github.com/rbgus4560/MediLog.git
+cd MediLog
 
 npm.cmd --prefix frontend ci
 py -3.12 -m venv .venv

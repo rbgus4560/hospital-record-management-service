@@ -30,8 +30,8 @@ Python이 설치되어 있는데 `py`만 없다면 `python --version`이 3.12.x�
 쓰기 가능한 폴더에서 처음 한 번 실행한다. 특정 사용자의 바탕화면 절대 경로를 복사하지 않는다.
 
 ```powershell
-git clone https://github.com/rbgus4560/hospital-record-management-service.git
-cd hospital-record-management-service
+git clone https://github.com/rbgus4560/MediLog.git
+cd MediLog
 code .
 npm.cmd --prefix frontend ci
 py -3.12 -m venv backend\.venv
