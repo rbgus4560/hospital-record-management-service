@@ -88,7 +88,30 @@ flowchart LR
 
 ## 설치 및 실행
 
-### 실행 환경
+### Docker Compose로 실행
+
+Docker Desktop의 Linux 컨테이너 엔진을 시작하고 저장소 루트에서 실행합니다.
+
+```powershell
+Copy-Item .env.example .env
+```
+
+루트 `.env`의 `DB_PASSWORD`를 설정한 뒤 다음 명령을 실행합니다.
+
+```powershell
+docker compose up --build -d --wait
+```
+
+기본 접속 주소는 [http://localhost:8080/](http://localhost:8080/)입니다. Nginx가 같은 주소의 `/api/` 요청을 `api:8000`에 전달하며, API는 `db:5432`에 접속합니다. DB가 준비되면 백엔드가 기존 스키마로 테이블을 초기화합니다.
+
+- 접속 포트는 `WEB_PORT`, 바인딩 IP는 `WEB_BIND_IP`에서 변경합니다. 저장 후 `docker compose up -d --wait`를 실행하면 됩니다.
+- 다른 PC의 브라우저에서 접속하려면 `WEB_BIND_IP=0.0.0.0`으로 설정하고 Docker를 실행하는 PC의 IP와 포트를 사용합니다. 방화벽에서 연결을 허용해야 할 수 있습니다. 이 구성은 로컬 시연용이며 LAN 공유에는 체험용 데이터만 사용합니다.
+- DB 기록과 OCR 모델은 각각 Docker 볼륨에 보관됩니다. 첫 OCR 요청에는 모델 다운로드가 필요합니다. `docker compose down`으로 종료해도 볼륨은 남으며, `docker compose down -v`를 실행하면 두 볼륨이 삭제됩니다.
+- 다른 PC에서 처음 실행하면 빈 DB가 생성됩니다. 기존 기록까지 옮기려면 PostgreSQL 백업을 복원합니다. 초기화 이후에는 `.env` 값과 PostgreSQL 계정의 비밀번호를 함께 변경해야 합니다.
+
+### Docker 없이 Windows에서 실행
+
+#### 실행 환경
 
 | 항목 | 준비 사항 |
 | --- | --- |
@@ -98,7 +121,7 @@ flowchart LR
 | 데이터베이스 | PostgreSQL 18.x 서버 실행, DB 생성 권한이 있는 계정 |
 | 실제 OCR 호출 | PaddleOCR 모델 다운로드를 위한 초기 외부 연결 |
 
-### 1. 저장소 복제 및 의존성 설치
+#### 1. 저장소 복제 및 의존성 설치
 
 ```powershell
 git clone https://github.com/rbgus4560/hospital-record-management-service.git
@@ -111,7 +134,7 @@ py -3.12 -m venv .venv
 
 `py` 명령이 없다면 Python 3.12의 실행 파일로 `-m venv .venv`를 실행합니다.
 
-### 2. 환경변수 설정과 DB 초기화
+#### 2. 환경변수 설정과 DB 초기화
 
 ```powershell
 if (-not (Test-Path backend\.env)) {
@@ -131,7 +154,7 @@ PostgreSQL 서비스가 실행 중인 상태에서 프로젝트 루트에서 초
 .\.venv\Scripts\python.exe backend\init_db.py
 ```
 
-### 3. 백엔드와 프런트엔드 실행
+#### 3. 백엔드와 프런트엔드 실행
 
 백엔드용 터미널에서 실행합니다.
 

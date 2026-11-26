@@ -8,7 +8,7 @@
  * 3. 주요 기능
  *    요청과 응답을 JSON으로 다루고 오류 메시지를 정리한다. 빈 날짜·시간은 저장용 null로 변환한다.
  */
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000'
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000'
 
 export function apiUrl(path) {
   return `${API_BASE}${path}`

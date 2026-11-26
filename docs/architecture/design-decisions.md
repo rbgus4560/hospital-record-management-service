@@ -21,3 +21,9 @@ PP-OCRv5 모바일 검출기와 한국어 인식 모델을 CPU에서 실행한�
 
 - 연동 코드 [paddle_ocr.py](../../backend/ocr/paddle_ocr.py)
 - 비교 지표 [OCR 평가 절차](../../ocr-evaluation/README.md)
+
+## Docker Compose 로컬 시연
+
+React 빌드와 API를 Nginx의 동일한 주소로 제공한다. 브라우저가 상대 경로로 API를 호출하므로 호스트의 접속 IP와 포트를 바꿀 때 프런트엔드 이미지를 다시 빌드할 필요가 없다. PostgreSQL과 API는 Compose 네트워크에서 서비스 이름으로 연결한다.
+
+PostgreSQL이 준비된 뒤 백엔드에서 기존 초기화 스크립트를 실행해 Windows 실행과 같은 스키마를 사용한다. 기록과 OCR 모델은 별도 볼륨을 사용해 컨테이너를 교체해도 보존한다.

@@ -1,0 +1,46 @@
+services:
+  web:
+    build: ./frontend
+    ports:
+      - "${WEB_BIND_IP:-127.0.0.1}:${WEB_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  api:
+    build: ./backend
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: ${DB_NAME:-hospital_records}
+      DB_USER: ${DB_USER:-hospital_app}
+      DB_PASSWORD: "${DB_PASSWORD:?Set DB_PASSWORD in the project .env file}"
+      PADDLE_PDX_CACHE_HOME: /var/cache/paddleocr
+    volumes:
+      - ocr_models:/var/cache/paddleocr
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/openapi.json', timeout=2).close()"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: ${DB_NAME:-hospital_records}
+      POSTGRES_USER: ${DB_USER:-hospital_app}
+      POSTGRES_PASSWORD: "${DB_PASSWORD:?Set DB_PASSWORD in the project .env file}"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+volumes:
+  postgres_data:
+  ocr_models:
